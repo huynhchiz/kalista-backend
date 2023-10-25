@@ -1,0 +1,37 @@
+{
+  "dependencies": {
+    "@babel/core": "7.15.4",
+    "@babel/node": "7.15.4",
+    "@babel/preset-env": "7.15.4",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.2",
+    "nodemon": "^3.0.1",
+    "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.1"
+  },
+  "name": "kalista-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huynhchiz/kalista-backend.git"
+  },
+  "keywords": [
+    "backend",
+    "kalista"
+  ],
+  "author": "Huynh Chi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huynhchiz/kalista-backend/issues"
+  },
+  "homepage": "https://github.com/huynhchiz/kalista-backend#readme",
+  "description": ""
+}
