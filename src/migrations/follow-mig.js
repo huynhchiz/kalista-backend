@@ -4,7 +4,7 @@ module.exports = {
    // chạy cái này trong gitbash để tạo table user | running migrations
    // npx sequelize-cli db:migrate
    async up(queryInterface, Sequelize) {
-      await queryInterface.createTable('Users', {
+      await queryInterface.createTable('Follow', {
          id: {
             allowNull: false,
             autoIncrement: true,
@@ -30,6 +30,6 @@ module.exports = {
       });
    },
    async down(queryInterface, Sequelize) {
-      await queryInterface.dropTable('Users');
+      await queryInterface.dropTable('Follow');
    },
 };

@@ -8,13 +8,13 @@ module.exports = (sequelize, DataTypes) => {
          Users.belongsTo(models.Genders, { foreignKey: 'genderId' });
          Users.belongsTo(models.Themes, { foreignKey: 'themeId' });
 
-         Users.hasMany(models.Images, { foreignKey: 'imageId' });
-         Users.hasMany(models.Videos, { foreignKey: 'videoId' });
-         Users.hasMany(models.Follow, { foreignKey: 'followId' });
-         Users.hasMany(models.ImgComments, { foreignKey: 'imgCommentId' });
-         Users.hasMany(models.VideoComments, { foreignKey: 'videoCommentId' });
-         Users.hasMany(models.ImageLikes, { foreignKey: 'imageLikeId' });
-         Users.hasMany(models.VideoLikes, { foreignKey: 'videoLikeId' });
+         Users.hasMany(models.Images);
+         Users.hasMany(models.Videos);
+         Users.hasMany(models.Follow);
+         Users.hasMany(models.ImagesComments);
+         Users.hasMany(models.VideosComments);
+         Users.hasMany(models.ImagesLikes);
+         Users.hasMany(models.VideosLikes);
       }
    }
    Users.init(

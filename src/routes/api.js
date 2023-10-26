@@ -1,13 +1,13 @@
 import express from "express";
 
+import signController from '../controller/signController'
+
 const router  = express.Router()
 
 const initApiRoutes = (app) => {
-    router.get('/', (req, res) => {
-        res.send('Hello world!')
-    })
+    router.post('/register', signController.handleRegister)
 
-    return app.use('/', router)
+    return app.use('/api', router)
 }
 
 export default initApiRoutes
