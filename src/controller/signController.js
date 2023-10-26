@@ -1,6 +1,5 @@
 import signService from '../service/signService.js'
 
-
 const handleRegister = async (req, res) => {
     let userData = req.body
     try {
@@ -19,15 +18,54 @@ const handleRegister = async (req, res) => {
             });
          }
     } catch (error) {
-        console.log('error from handleRegister controller: ', error);
+        console.log('handleRegister controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
-            EX: '-1',
+            EX: '-5',
             DT: '',
-         });
+        });
+    }
+}
+
+const handleLogin = async (req, res) => {
+    try {
+        let userData = req.body
+        let data = await signService.loginUser(userData)
+
+        if(data && data.accessToken && data.refreshToken) {
+            res.cookie('accessToken', data.accessToken, {
+                httpOnly: true,
+                maxAge: 60000 * 1000,
+            })
+            res.cookie('refreshToken', data.refreshToken, {
+                httpOnly: true,
+                maxAge: 60000 * 1000,
+            })
+
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+             });
+        } else {
+            console.log('check err handleLogin from controller');
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+             });
+        }
+        
+    } catch (error) {
+        console.log('handleLogin controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EX: '-5',
+            DT: '',
+        });
     }
 }
 
 module.exports = {
-    handleRegister
+    handleRegister, handleLogin
 }
