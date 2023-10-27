@@ -6,7 +6,7 @@ const getTheme = async (email) => {
             where: { email: email },
          });
          let theme = await db.Themes.findOne({
-            where: { id: user.themeId },
+            where: { id: +user.themeId },
          });
 
          return {

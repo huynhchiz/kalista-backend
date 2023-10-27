@@ -1,8 +1,7 @@
 import db from '../models/index.js'
 import bcrypt from 'bcryptjs';
 import { Op } from 'sequelize';
-
-import { createJwt } from '../middleware/jwtActions.js'
+import { createAccessToken, createRefreshToken } from '../middleware/jwtActions.js'
 
 const salt = bcrypt.genSaltSync(10);
 const hashPassword = (password) => {
@@ -46,7 +45,7 @@ const registerUser = async (userData) => {
         phone: userData.phone,
         username: userData.username,
         password: hassPass,
-        groupId: 4, //mac dinh la 4 neu register
+        groupId: 2, //mac dinh user = 2
         themeId: 1, //mac dinh theme light
       });
 
@@ -67,20 +66,18 @@ const registerUser = async (userData) => {
 
 const getUserGroupWithRoles = async (user) => {
    let group = await db.Groups.findOne({
-      where: { id: user.groupId },
+      where: { id: +user.groupId },
       attributes: ['id', 'name', 'description'],
       raw: true,
    });
 
    let roles = await db.Roles.findAll({
       attributes: ['id', 'url', 'description'],
-      include: { model: db.Groups, where: { id: user.groupId }, attributes: [], through: { attributes: [] } },
+      include: { model: db.Groups, where: { id: +user.groupId }, attributes: [], through: { attributes: [] } },
       throught: { attributes: [] },
       raw: true,
       nest: true,
    });
-
-   console.log({ ...group, roles });
    
    return group && roles ? { ...group, roles } : {};
 }
@@ -100,14 +97,15 @@ const loginUser = async (userData) => {
          if(isCorrectPassword) {
             console.log('Correct password');
 
-            let userGroupWithRoles = getUserGroupWithRoles(user)
+            let userGroupWithRoles = await getUserGroupWithRoles(user)
             let payload = {
                email: user.email,
                username: user.name,
-               userGroupWithRoles
+               userGroupWithRoles,
             }
-            let { accessToken, refreshToken } = createJwt(payload)
-
+            let accessToken = createAccessToken(payload)
+            let refreshToken = createRefreshToken(payload)
+            
             return {
                accessToken,
                refreshToken,
