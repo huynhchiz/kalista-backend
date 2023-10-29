@@ -1,11 +1,9 @@
 import { cloudinary } from "../config/configCloudinary";
 
 const uploadImage = async (image) => {
-    console.log({image});
     try {
-        let data = await cloudinary.uploader.upload(image, { upload_preset: "post_image" })
+        const data = await cloudinary.uploader.upload(image, { upload_preset: "post_image" })
         if (data) {
-            console.log(data);
             return {
                 EC: 0,
                 EM: 'Upload image success',

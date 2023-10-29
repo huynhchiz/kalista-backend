@@ -10,13 +10,6 @@ cloudinary.config({
   cloud_name: cloud_name,
   api_key: api_key,
   api_secret: api_secret,
-  secure: true
 });
 
-const opts = {
-    overwrite: true,
-    invalidate: true,
-    resource_type: "raw",
-};
-
-export { opts, cloudinary }
+export { cloudinary }

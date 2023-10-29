@@ -19,8 +19,8 @@ configCors(app);
 app.use(fileUpload())
 
 // config body-parser
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "25mb" }));
+app.use(bodyParser.json({ limit: "25mb" }));
 
 // config cookie parser
 app.use(cookieParser());
