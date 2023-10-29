@@ -24,7 +24,7 @@ const getTheme = async (email) => {
             EM: 'Something wrong in service',
             EC: '-5',
             DT: '',
-         };   
+        };   
     }
 }
 
