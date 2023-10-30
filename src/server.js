@@ -6,8 +6,6 @@ import cookieParser from 'cookie-parser';
 import initApiRoutes from "./routes/api";
 import configCors from "./config/configCors";
 
-const fileUpload = require('express-fileupload');
-
 dotenv.config()
 
 const app = express()
@@ -16,11 +14,19 @@ const PORT = process.env.PORT || 3333
 // config CORS
 configCors(app);
 
-app.use(fileUpload())
 
 // config body-parser
-app.use(bodyParser.urlencoded({ extended: true, limit: "25mb" }));
-app.use(bodyParser.json({ limit: "25mb" }));
+// app.use(bodyParser.urlencoded({ extended: true, limit: "25mb" }));
+// app.use(bodyParser.json({ limit: "25mb" }));
+
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 
 // config cookie parser
 app.use(cookieParser());
