@@ -35,9 +35,6 @@ module.exports = {
          groupId: {
             type: Sequelize.INTEGER,
          },
-         themeId: {
-            type: Sequelize.INTEGER,
-         },
 
          createdAt: {
             allowNull: false,

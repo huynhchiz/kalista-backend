@@ -1,6 +1,5 @@
 import express from "express";
 import signController from '../controller/signController'
-import themeController from '../controller/themeController'
 import userController from '../controller/userController'
 import imageController from '../controller/imageController'
 
@@ -17,12 +16,7 @@ const initApiRoutes = (app) => {
     router.get('/account', userController.getAccount)
     router.post('/refresh-token', userController.refreshNewToken)
 
-    router.get('/theme/read', themeController.handleGetTheme)
-
     router.post('/image/upload', upload.single('image') , imageController.handleUploadImage)
-    // router.post('/image/upload', upload.single('image'), (req, res) => {
-    //     console.log(req.file);
-    // })
 
     return app.use('/api', router)
 }

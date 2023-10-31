@@ -15,7 +15,7 @@ module.exports = {
          alt: {
             type: Sequelize.STRING,
          },
-         description: {
+         caption: {
             type: Sequelize.STRING,
          },
          

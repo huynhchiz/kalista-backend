@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
          // define association here
          Users.belongsTo(models.Groups, { foreignKey: 'groupId' });
          Users.belongsTo(models.Genders, { foreignKey: 'genderId' });
-         Users.belongsTo(models.Themes, { foreignKey: 'themeId' });
 
          Users.hasMany(models.Images);
          Users.hasMany(models.Videos);
@@ -27,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
          avatar: DataTypes.STRING,
          groupId: DataTypes.INTEGER,
          genderId: DataTypes.INTEGER,
-         themeId: DataTypes.INTEGER,
       },
       {
          sequelize,

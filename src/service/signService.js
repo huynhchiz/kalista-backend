@@ -46,7 +46,6 @@ const registerUser = async (userData) => {
         username: userData.username,
         password: hassPass,
         groupId: 2, //mac dinh user = 2
-        themeId: 1, //mac dinh theme light
       });
 
      return {
