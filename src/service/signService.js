@@ -99,7 +99,7 @@ const loginUser = async (userData) => {
             let userGroupWithRoles = await getUserGroupWithRoles(user)
             let payload = {
                email: user.email,
-               username: user.name,
+               username: user.username,
                userGroupWithRoles,
             }
             let accessToken = createAccessToken(payload)

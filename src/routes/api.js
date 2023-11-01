@@ -16,7 +16,8 @@ const initApiRoutes = (app) => {
     router.get('/account', userController.getAccount)
     router.post('/refresh-token', userController.refreshNewToken)
 
-    router.post('/image/upload', upload.single('image') , imageController.handleUploadImage)
+    router.post('/image/upload-cloudinary', upload.single('image'), imageController.handleUploadImageCloudinary)
+    router.post('/image/upload', imageController.handleUploadImage)
 
     return app.use('/api', router)
 }

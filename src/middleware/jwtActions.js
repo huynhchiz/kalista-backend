@@ -49,7 +49,7 @@ const verifyToken = (token, scretKey) => {
     return decoded
 }
 
-const passCheckUserJwtPaths = ['/', '/login', '/logout', '/register', '/refresh-token', '/image/upload']
+const passCheckUserJwtPaths = ['/', '/login', '/logout', '/register', '/refresh-token', '/image/upload-cloudinary']
 const checkUserJwt = (req, res, next) => {
     if (passCheckUserJwtPaths.includes(req.path)) return next();
 
@@ -67,6 +67,7 @@ const checkUserJwt = (req, res, next) => {
             return next();
         }
 
+        // Expired token
         if (decodedAccessToken && +decodedAccessToken === -100) {
             req.user = decodedAccessToken;
             return res.status(403).json({
@@ -91,7 +92,7 @@ const checkUserJwt = (req, res, next) => {
     }
 }
 
-const passCheckUserPermissionPaths = ['/', '/login', '/logout', '/register', '/account', '/refresh-token', '/image/upload']
+const passCheckUserPermissionPaths = ['/', '/login', '/logout', '/register', '/account', '/refresh-token', '/image/upload-cloudinary']
 const checkUserPermission = (req, res, next) => {
     if (passCheckUserPermissionPaths.includes(req.path)) {
         return next();
@@ -147,7 +148,7 @@ const refreshNewToken = (refreshToken) => {
         newAccessToken = createAccessToken(
             {
                 email: decodedRefToken.email,
-                username: decodedRefToken.name,
+                username: decodedRefToken.username,
                 userGroupWithRoles: decodedRefToken.userGroupWithRoles,
                 ['iat']: Math.floor(Date.now() / 1000)
             },
