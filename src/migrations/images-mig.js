@@ -18,6 +18,12 @@ module.exports = {
          caption: {
             type: Sequelize.STRING,
          },
+         time: {
+            type: Sequelize.STRING,
+         },
+         date: {
+            type: Sequelize.STRING,
+         },
          
          userId: {
             type: Sequelize.INTEGER,

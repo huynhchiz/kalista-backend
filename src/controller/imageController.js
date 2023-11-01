@@ -23,20 +23,22 @@ const handleUploadImageCloudinary = async (req, res) => {
 }
 
 const handleUploadImage = async (req, res) => {
-    console.log(req.user);
     try {
-        let src = res.body.src
-        let alt = res.body.alt
-        let caption = res.body.caption
-        let time = res.body.time
-        if (!src || !alt || !caption || !time) {
+        let email = req.user.email
+        let src = req.body.src
+        let alt = req.body.alt
+        let caption = req.body.caption
+        let time = req.body.time
+        let date = req.body.date
+        
+        if (!email || !src || !alt || !time || !date) {
             return res.status(200).json({
                EM: 'Missing required parameters!',
                EC: '1',
                DT: '',
         })}
 
-        let data = await imageService.uploadImage(src, alt, caption, time)
+        let data = await imageService.uploadImage(email, src, alt, caption, time, date)
         if(data) {
             return res.status(200).json({
                 EM: data.EM,

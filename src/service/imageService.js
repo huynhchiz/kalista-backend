@@ -12,7 +12,7 @@ const uploadImageCloudinary = async (image) => {
             }
         }
     } catch (error) {
-        console.log('uploadImage err service: ', error);
+        console.log('uploadImageCloudinary err service: ', error);
         return {
             EM: 'Something wrong in service',
             EC: '-5',
@@ -21,12 +21,21 @@ const uploadImageCloudinary = async (image) => {
     }
 }
 
-const uploadImage = async (src, alt, caption, time) => {
+const uploadImage = async (email, src, alt, caption, time, date) => {
     try {
-        // let data = await db.Images.create({
+        let user = await db.Users.findOne({
+            where: {email: email}
+        })
 
-        // })
-        if (data) {
+        if (user) {
+            await db.Images.create({
+                src: src,
+                alt: alt,
+                caption: caption,
+                time: time,
+                date: date,
+                userId: user.id
+            })
             return {
                 EC: 0,
                 EM: 'Upload image success',
