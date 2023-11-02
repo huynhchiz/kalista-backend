@@ -1,4 +1,5 @@
 import express from "express";
+
 import signController from '../controller/signController'
 import userController from '../controller/userController'
 import imageController from '../controller/imageController'
@@ -18,6 +19,7 @@ const initApiRoutes = (app) => {
     router.get('/account', userController.getAccount)
     router.post('/refresh-token', userController.refreshNewToken)
     router.post('/user/avatar/upload', userController.uploadAvatar)
+    router.post('/user/avatar/read', userController.getUserAvatar)
 
     router.post('/image/upload-cloudinary', upload.single('image'), imageController.handleUploadImageCloudinary)
     router.post('/image/upload', imageController.handleUploadImage)
