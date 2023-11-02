@@ -13,8 +13,11 @@ const initApiRoutes = (app) => {
 
     router.post('/register', signController.handleRegister)
     router.post('/login', signController.handleLogin)
+    router.post('/logout', signController.handleLogout)
+    
     router.get('/account', userController.getAccount)
     router.post('/refresh-token', userController.refreshNewToken)
+    router.post('/user/avatar/upload', userController.uploadAvatar)
 
     router.post('/image/upload-cloudinary', upload.single('image'), imageController.handleUploadImageCloudinary)
     router.post('/image/upload', imageController.handleUploadImage)

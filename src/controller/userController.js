@@ -1,4 +1,5 @@
 import jwtActions from '../middleware/jwtActions'
+import { uploadUserAvatar } from '../service/userService'
 
 const getAccount = async (req, res) =>{
     return res.status(200).json({
@@ -62,6 +63,26 @@ const refreshNewToken = async (req, res) => {
     }
 }
 
+const uploadAvatar = async (req, res) => {
+    try {
+        let data = await uploadUserAvatar(req.body)
+        if(data) {
+            return res.status(200).json({
+                EM: 'upload avatar success',
+                EX: '0',
+                DT: '',
+            });
+        }
+    } catch (error) {
+        console.log('uploadAvatar controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EX: '-1',
+            DT: '',
+        });
+    }
+}
+
 module.exports = {
-    getAccount, refreshNewToken
+    getAccount, refreshNewToken, uploadAvatar
 }

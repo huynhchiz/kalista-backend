@@ -50,7 +50,7 @@ const verifyToken = (token, scretKey) => {
 }
 
 const passCheckUserJwtPaths = ['/', '/login', '/logout', '/register', 
-    '/refresh-token']
+    '/refresh-token', '/image/upload-cloudinary']
 const checkUserJwt = (req, res, next) => {
     if (passCheckUserJwtPaths.includes(req.path)) return next();
 
@@ -94,7 +94,7 @@ const checkUserJwt = (req, res, next) => {
 }
 
 const passCheckUserPermissionPaths = ['/', '/login', '/logout', '/register',
-     '/account', '/refresh-token']
+     '/account', '/refresh-token', '/image/upload-cloudinary']
 const checkUserPermission = (req, res, next) => {
     if (passCheckUserPermissionPaths.includes(req.path)) {
         return next();
