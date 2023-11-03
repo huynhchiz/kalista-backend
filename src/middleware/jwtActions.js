@@ -49,8 +49,11 @@ const verifyToken = (token, scretKey) => {
     return decoded
 }
 
-const passCheckUserJwtPaths = ['/', '/login', '/logout', '/register', 
-    '/refresh-token', '/image/upload-cloudinary', '/user/avatar/upload']
+const passCheckUserJwtPaths = [
+    '/', '/login', '/logout', '/register', 
+    '/refresh-token', '/image/upload-cloudinary',
+    '/image/upload', '/user/avatar/upload', '/user/avatar/read'
+]
 const checkUserJwt = (req, res, next) => {
     if (passCheckUserJwtPaths.includes(req.path)) return next();
 
@@ -93,8 +96,11 @@ const checkUserJwt = (req, res, next) => {
     }
 }
 
-const passCheckUserPermissionPaths = ['/', '/login', '/logout', '/register',
-     '/account', '/refresh-token', '/image/upload-cloudinary', '/user/avatar/upload']
+const passCheckUserPermissionPaths = [
+    '/', '/login', '/logout', '/register',
+    '/account', '/refresh-token', '/image/upload-cloudinary', 
+    '/image/upload', '/user/avatar/upload', '/user/avatar/read'
+]
 const checkUserPermission = (req, res, next) => {
     if (passCheckUserPermissionPaths.includes(req.path)) {
         return next();

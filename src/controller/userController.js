@@ -87,7 +87,6 @@ const uploadAvatar = async (req, res) => {
 }
 
 const getUserAvatar = async (req, res) => {
-    console.log('req body: ', req.body);
     try {
         let data = await userService.getUserAvatar(req.body.email)
         if(data) {
