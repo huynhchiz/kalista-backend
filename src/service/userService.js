@@ -48,6 +48,30 @@ const getUserAvatar = async (email) => {
     }
 }
 
+const deleteUserAvatar = async (email) => {
+    try {
+        await db.Users.update({
+            avatar: ''
+        },
+        {
+            where: { email: email }
+        })
+        return {
+            EC: 0,
+            EM: 'Delete avatar success',
+            DT: ''
+        }
+        
+    } catch (error) {
+        console.log('getUserAvatar sv err: ', error);
+        return {
+            EM: 'Something wrong in service',
+            EC: '-5',
+            DT: '',
+        };
+    }
+}
+
 module.exports = {
-    uploadUserAvatar, getUserAvatar
+    uploadUserAvatar, getUserAvatar, deleteUserAvatar
 }

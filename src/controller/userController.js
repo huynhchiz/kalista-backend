@@ -65,7 +65,7 @@ const refreshNewToken = async (req, res) => {
 
 const uploadAvatar = async (req, res) => {
     try {
-        let email = req.body.email
+        let email = req.user.email
         let avatar = req.body.avatar
 
         let data = await userService.uploadUserAvatar(email, avatar)
@@ -88,7 +88,27 @@ const uploadAvatar = async (req, res) => {
 
 const getUserAvatar = async (req, res) => {
     try {
-        let data = await userService.getUserAvatar(req.body.email)
+        let data = await userService.getUserAvatar(req.user.email)
+        if(data) {
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
+    } catch (error) {
+        console.log('uploadAvatar controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-1',
+            DT: '',
+        });
+    }
+}
+
+const deleteUserAvatar = async (req, res) => {
+    try {
+        let data = await userService.deleteUserAvatar(req.user.email)
         if(data) {
             return res.status(200).json({
                 EM: data.EM,
@@ -107,5 +127,5 @@ const getUserAvatar = async (req, res) => {
 }
 
 module.exports = {
-    getAccount, refreshNewToken, uploadAvatar, getUserAvatar
+    getAccount, refreshNewToken, uploadAvatar, getUserAvatar, deleteUserAvatar
 }
