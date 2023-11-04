@@ -15,7 +15,15 @@ module.exports = {
          alt: {
             type: Sequelize.STRING,
          },
-         description: {
+         caption: {
+            type: Sequelize.STRING,
+         },
+         
+         time: {
+            type: Sequelize.STRING,
+         },
+         
+         date: {
             type: Sequelize.STRING,
          },
          

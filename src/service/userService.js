@@ -29,8 +29,6 @@ const getUserAvatar = async (email) => {
             where: { email: email },
             attributes: ['avatar']
         })
-
-        console.log(data);
         if(data) {
             return {
                 EC: 0,

@@ -1,22 +1,21 @@
-import imageService from '../service/imageService'
+import { cloudinary } from '../config/configCloudinary'
+import db from '../models/index'
 
 const handleUploadImageCloudinary = async (req, res) => {
     try {
-        let data = await imageService.uploadImageCloudinary(req.file)
+        let data = await cloudinary.uploader.upload(`./${req.file.path}`)
         if(data) {
             return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT,
+                EC: 0,
+                EM: 'Upload image to Cloudinary success',
+                DT: data.url || data.secure_url,
             });
-        } else {
-            console.log('check err from imageController handleUploadImage');
         }
     } catch (error) {
-        console.log('handleUploadImage controller err: ', error);
+        console.log('handleUploadImageCloudinary controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
-            EX: '-5',
+            EC: -5,
             DT: '',
         });
     }
@@ -38,21 +37,29 @@ const handleUploadImage = async (req, res) => {
                DT: '',
         })}
 
-        let data = await imageService.uploadImage(email, src, alt, caption, time, date)
-        if(data) {
+        let user = await db.Users.findOne({
+            where: {email: email}
+        })
+        if (user) {
+            await db.Images.create({
+                src: src,
+                alt: alt,
+                caption: caption,
+                time: time,
+                date: date,
+                userId: user.id
+            })
             return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT,
-            });
-        } else {
-            console.log('check err from imageController handleUploadImage');
+                EC: 0,
+                EM: 'Upload image success',
+                DT: '',
+            })
         }
     } catch (error) {
         console.log('handleUploadImage controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
-            EX: '-5',
+            EC: '-5',
             DT: '',
         });
     }
