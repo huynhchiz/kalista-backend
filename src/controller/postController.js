@@ -4,12 +4,16 @@ const getPosts = async (req, res) => {
     try {
         let posts = []
         let images = await db.Images.findAll({
-            raw: true
+            include: { model: db.Users, attributes: [ 'username', 'avatar' ] },
+            raw: true,
+            nest: true,
         })
         images = images.map(image => ({...image, type: 'image'}))
 
         let videos = await db.Videos.findAll({
-            raw: true
+            include: { model: db.Users, attributes: [ 'username', 'avatar' ] },
+            raw: true,
+            nest: true,
         })
         videos = videos.map(video => ({...video, type: 'video'}))
 
