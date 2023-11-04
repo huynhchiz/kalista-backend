@@ -4,7 +4,6 @@ import db from '../models/index'
 const handleUploadVideoCloudinary = async (req, res) => {
     try {
         let data = await cloudinary.uploader.upload(`./${req.file.path}`, { resource_type: "video" })
-        console.log(data);
         if(data) {
             return res.status(200).json({
                 EC: 0,

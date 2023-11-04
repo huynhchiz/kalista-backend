@@ -4,6 +4,7 @@ import signController from '../controller/signController'
 import userController from '../controller/userController'
 import imageController from '../controller/imageController'
 import videoController from '../controller/videoController'
+import postController from '../controller/postController'
 
 import { checkUserJwt, checkUserPermission } from '../middleware/jwtActions';
 import { upload } from "../middleware/multer";
@@ -29,6 +30,8 @@ const initApiRoutes = (app) => {
 
     router.post('/video/upload-cloudinary', upload.single('video'), videoController.handleUploadVideoCloudinary)
     router.post('/video/upload', videoController.handleUploadVideo)
+
+    router.get('/post/read', postController.getPosts)
 
     return app.use('/api', router)
 }
