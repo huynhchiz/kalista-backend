@@ -1,21 +1,19 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-   // chạy cái này trong gitbash để tạo table user | running migrations
-   // npx sequelize-cli db:migrate
    async up(queryInterface, Sequelize) {
-      await queryInterface.createTable('Follow', {
+      await queryInterface.createTable('PostsLikes', {
          id: {
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-
+         
          userId: {
             type: Sequelize.INTEGER,
          },
-         userFollowId: {
+         postId: {
             type: Sequelize.INTEGER,
          },
 
@@ -30,6 +28,6 @@ module.exports = {
       });
    },
    async down(queryInterface, Sequelize) {
-      await queryInterface.dropTable('Follow');
+      await queryInterface.dropTable('PostsLikes');
    },
 };

@@ -1,31 +1,21 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
+   // chạy cái này trong gitbash để tạo table user | running migrations
+   // npx sequelize-cli db:migrate
    async up(queryInterface, Sequelize) {
-      await queryInterface.createTable('Images', {
+      await queryInterface.createTable('Follows', {
          id: {
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         src: {
-            type: Sequelize.STRING,
-         },         
-         alt: {
-            type: Sequelize.STRING,
-         },
-         caption: {
-            type: Sequelize.STRING,
-         },
-         time: {
-            type: Sequelize.STRING,
-         },
-         date: {
-            type: Sequelize.STRING,
-         },
-         
+
          userId: {
+            type: Sequelize.INTEGER,
+         },
+         userFollowId: {
             type: Sequelize.INTEGER,
          },
 
@@ -40,6 +30,6 @@ module.exports = {
       });
    },
    async down(queryInterface, Sequelize) {
-      await queryInterface.dropTable('Images');
+      await queryInterface.dropTable('Follows');
    },
 };

@@ -2,9 +2,8 @@ import express from "express";
 
 import signController from '../controller/signController'
 import userController from '../controller/userController'
-import imageController from '../controller/imageController'
-import videoController from '../controller/videoController'
 import postController from '../controller/postController'
+import followController from '../controller/followController'
 
 import { checkUserJwt, checkUserPermission } from '../middleware/jwtActions';
 import { upload } from "../middleware/multer";
@@ -25,13 +24,17 @@ const initApiRoutes = (app) => {
     router.get('/user/avatar/read', userController.getUserAvatar)
     router.post('/user/avatar/delete', userController.deleteUserAvatar)
 
-    router.post('/image/upload-cloudinary', upload.single('image'), imageController.handleUploadImageCloudinary)
-    router.post('/image/upload', imageController.handleUploadImage)
+    router.post('/user/follow', followController.follow)
+    router.post('/user/unfollow', followController.unfollow)
 
-    router.post('/video/upload-cloudinary', upload.single('video'), videoController.handleUploadVideoCloudinary)
-    router.post('/video/upload', videoController.handleUploadVideo)
+    router.post('/post/upload-cloudinary-image', upload.single('image'), postController.uploadImageCloudinary)
+    router.post('/post/upload-cloudinary-video', upload.single('video'), postController.uploadVideoCloudinary)
+    router.post('/post/upload', postController.uploadPost)
 
-    router.get('/post/read', postController.getPosts)
+    router.post('/post/read', postController.getPosts)
+    router.post('/post/read-following', postController.getFollowingPosts)
+    router.post('/post/read-not-following', postController.getExplorePosts)
+    router.post('/post/read-user', postController.getUserPosts)
 
     return app.use('/api', router)
 }

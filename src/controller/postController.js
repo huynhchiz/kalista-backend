@@ -1,28 +1,148 @@
-import db from '../models/index'
+import postService from '../service/postService'
+
+const uploadImageCloudinary = async (req, res) => {
+    try {
+        let data = await postService.uploadImageCloudinarySV(req.file)
+        if (data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'Upload image tp Cloudinary success',
+                DT: data
+            })
+        }
+    } catch (error) {
+        console.log('uploadImageCloudinary controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const uploadVideoCloudinary = async (req, res) => {
+    try {
+        let data = await postService.uploadVideoCloudinarySV(req.file)
+        if (data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'Upload video to Cloudinary success',
+                DT: data
+            })
+        }
+    } catch (error) {
+        console.log('uploadVideoCloudinary controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const uploadPost = async (req, res) => {
+    try {
+        let email = req.user.email
+
+        let src = req.body.src
+        let alt = req.body.alt
+        let caption = req.body.caption
+        let time = req.body.time
+        let date = req.body.date
+        let type = req.body.type
+        
+        if (!email || !src || !alt || !time || !date || !type) {
+            return res.status(200).json({
+               EM: 'Missing required parameters!',
+               EC: '1',
+               DT: '',
+        })}
+
+        await postService.uploadPostSV(email, src, alt, caption, time, date, type)
+        return res.status(200).json({
+            EC: 0,
+            EM: 'Upload post success',
+            DT: '',
+        })
+
+    } catch (error) {
+        console.log('uploadPost controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
 
 const getPosts = async (req, res) => {
     try {
-        let posts = []
-        let images = await db.Images.findAll({
-            include: { model: db.Users, attributes: [ 'username', 'avatar' ] },
-            raw: true,
-            nest: true,
-        })
-        images = images.map(image => ({...image, type: 'image'}))
-
-        let videos = await db.Videos.findAll({
-            include: { model: db.Users, attributes: [ 'username', 'avatar' ] },
-            raw: true,
-            nest: true,
-        })
-        videos = videos.map(video => ({...video, type: 'video'}))
-
-        posts = images.concat(videos)
-        if(posts && posts.length > 0) {
+        let data = await postService.getPostsSV(req.body.limit)
+        if(data && data.length > 0) {
             return res.status(200).json({
                 EC: 0,
                 EM: 'Get posts success',
-                DT: posts,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getPosts controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getFollowingPosts = async (req, res) => {
+    try {
+        let data = await postService.getFollowingPostsSV(req.user.email, req.body.limit)
+        if(data && data.length > 0) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'Get posts success',
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getPosts controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getExplorePosts = async (req, res) => {
+    try {
+        let data = await postService.getExplorePostsSV(req.user.email, req.body.limit)
+        if(data && data.length > 0) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'Get posts from user not following yet success',
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getPosts controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getUserPosts = async (req, res) => {
+    try {
+        let data = await postService.getUserPostsSV(req.body.email, req.body.limit)
+        if(data && data.length > 0) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'Get posts success',
+                DT: data,
             })
         }
     } catch (error) {
@@ -36,5 +156,11 @@ const getPosts = async (req, res) => {
 }
 
 module.exports = {
-    getPosts
+    uploadImageCloudinary,
+    uploadVideoCloudinary,
+    uploadPost,
+    getPosts,
+    getFollowingPosts,
+    getUserPosts,
+    getExplorePosts
 }

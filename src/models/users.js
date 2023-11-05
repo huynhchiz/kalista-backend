@@ -7,13 +7,10 @@ module.exports = (sequelize, DataTypes) => {
          Users.belongsTo(models.Groups, { foreignKey: 'groupId' });
          Users.belongsTo(models.Genders, { foreignKey: 'genderId' });
 
-         Users.hasMany(models.Images);
-         Users.hasMany(models.Videos);
-         Users.hasMany(models.Follow);
-         Users.hasMany(models.ImagesComments);
-         Users.hasMany(models.VideosComments);
-         Users.hasMany(models.ImagesLikes);
-         Users.hasMany(models.VideosLikes);
+         Users.hasMany(models.Follows);
+         Users.hasMany(models.Posts);
+         Users.hasMany(models.PostsComments);
+         Users.hasMany(models.PostsLikes);
       }
    }
    Users.init(
