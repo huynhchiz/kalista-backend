@@ -12,10 +12,10 @@ module.exports = {
             type: Sequelize.INTEGER,
          },
 
-         userId: {
+         userToFollow: {
             type: Sequelize.INTEGER,
          },
-         userFollowId: {
+         follower: {
             type: Sequelize.INTEGER,
          },
 

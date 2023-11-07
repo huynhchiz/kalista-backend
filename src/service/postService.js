@@ -52,14 +52,14 @@ const getFollowingPostsSV = async (email, limit) => {
     })
 
     let followingListId = await db.Follows.findAll({
-        where: { userId: +user.id },
-        attributes: [ 'userFollowId' ],
+        where: { follower: +user.id },
+        attributes: [ 'userToFollow' ],
         raw: true,
     })
-    followingListId = followingListId.map(flId => (flId.userFollowId))
+    followingListId = followingListId.map(item => (item.userToFollow))
     followingListId = followingListId.concat(user.id)
 
-    let posts = [] 
+    let posts = []
     posts = await db.Posts.findAll({
         where: { userId: followingListId },
         include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
@@ -69,6 +69,7 @@ const getFollowingPostsSV = async (email, limit) => {
         order: [['updatedAt', 'DESC']]
     })
 
+    posts = posts.map(post => ({...post, followType: true}))
     return posts
 }
 
@@ -77,11 +78,11 @@ const getExplorePostsSV = async (email, limit) => {
         where: {email: email}
     })
     let followingListId = await db.Follows.findAll({
-        where: { userId: +user.id },
-        attributes: [ 'userFollowId' ],
+        where: { follower: +user.id },
+        attributes: [ 'userToFollow' ],
         raw: true,
     })
-    followingListId = followingListId.map(flId => (flId.userFollowId))
+    followingListId = followingListId.map(item => (item.userToFollow))
     followingListId = followingListId.concat(user.id)
     
     let posts = [] 
@@ -94,6 +95,7 @@ const getExplorePostsSV = async (email, limit) => {
         order: [['updatedAt', 'DESC']]
     })
 
+    posts = posts.map(post => ({...post, followType: false}))
     return posts
 }
 

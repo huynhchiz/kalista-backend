@@ -24,6 +24,8 @@ const initApiRoutes = (app) => {
     router.get('/user/avatar/read', userController.getUserAvatar)
     router.post('/user/avatar/delete', userController.deleteUserAvatar)
 
+    router.post('/user/follower/read', followController.getFollowers)
+    router.post('/user/following/read', followController.getUsersFollowing)
     router.post('/user/follow', followController.follow)
     router.post('/user/unfollow', followController.unfollow)
 

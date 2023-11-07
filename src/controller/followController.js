@@ -74,7 +74,51 @@ const unfollow = async (req, res) => {
     }
 }
 
+const getFollowers = async (req, res) => {
+    try {
+        let data = await followService.getFollowersSV(req.body.email)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `get followers success`,
+                DT: data,
+            })
+        }
+        
+    } catch (error) {
+        console.log('unfollow controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getUsersFollowing = async (req, res) => {
+    try {
+        let data = await followService.getUsersFollowingSV(req.body.email, req.body.limit)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `get user followings success`,
+                DT: data,
+            })
+        }
+        
+    } catch (error) {
+        console.log('unfollow controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 module.exports = {
     follow,
-    unfollow
+    unfollow,
+    getFollowers,
+    getUsersFollowing
 }
