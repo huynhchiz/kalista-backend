@@ -38,6 +38,10 @@ const initApiRoutes = (app) => {
     router.post('/post/read-not-following', postController.getExplorePosts)
     router.post('/post/read-user', postController.getUserPosts)
 
+    router.post('/post/like', postController.likePost)
+    router.post('/post/unlike', postController.unlikePost)
+
+
     return app.use('/api', router)
 }
 

@@ -10,10 +10,10 @@ module.exports = {
             type: Sequelize.INTEGER,
          },
          
-         userId: {
+         postId: {
             type: Sequelize.INTEGER,
          },
-         postId: {
+         userLike: {
             type: Sequelize.INTEGER,
          },
 

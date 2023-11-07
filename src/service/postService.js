@@ -36,7 +36,7 @@ const uploadPostSV = async (email, src, alt, caption, time, date, type) => {
 const getPostsSV = async (limit) => {
     let posts = [] 
     posts = await db.Posts.findAll({
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },         
         raw: true,
         nest: true,
         limit: limit,
@@ -62,7 +62,7 @@ const getFollowingPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: followingListId },
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },        
         raw: true,
         nest: true,
         limit: limit,
@@ -107,7 +107,7 @@ const getUserPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: user.id },
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+        include:  { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },         
         raw: true,
         nest: true,
         limit: limit,
@@ -116,6 +116,41 @@ const getUserPostsSV = async (email, limit) => {
     return posts
 }
 
+const likePostSV = async (email, postId) => {
+    let user = await db.Users.findOne({ where: { email: email } })
+
+    if(user) {
+        await db.PostsLikes.create({
+            userLike: +user.id,
+            postId: +postId,
+        })
+    }
+
+    return postId
+}
+
+const unlikePostSV = async (email, postId) => {
+    let user = await db.Users.findOne({ where: { email: email } })
+    if(user) {
+        await db.PostsLikes.destroy({
+            where: {
+                userLikey: +user.id,
+                postId: +postId,
+            }
+        })
+    }
+
+    return postId
+}
+
 module.exports = {
-    uploadImageCloudinarySV, uploadVideoCloudinarySV, uploadPostSV, getPostsSV, getUserPostsSV, getFollowingPostsSV, getExplorePostsSV
+    uploadImageCloudinarySV,
+    uploadVideoCloudinarySV,
+    uploadPostSV,
+    getPostsSV,
+    getUserPostsSV,
+    getFollowingPostsSV,
+    getExplorePostsSV,
+    likePostSV,
+    unlikePostSV,
 }
