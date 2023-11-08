@@ -1,6 +1,7 @@
 import { cloudinary } from '../config/configCloudinary'
 import db from '../models/index'
 import { Op } from 'sequelize'
+import Sequelize from 'sequelize'
 
 const uploadImageCloudinarySV = async (image) => {
     let data = await cloudinary.uploader.upload(`./${image.path}`)
@@ -47,10 +48,7 @@ const getPostsSV = async (limit) => {
 }
 
 const getFollowingPostsSV = async (email, limit) => {
-    let user = await db.Users.findOne({
-        where: {email: email}
-    })
-
+    let user = await db.Users.findOne({where: {email: email}})
     let followingListId = await db.Follows.findAll({
         where: { follower: +user.id },
         attributes: [ 'userToFollow' ],
@@ -62,21 +60,45 @@ const getFollowingPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: followingListId },
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },        
-        raw: true,
+        subQuery: false,
+        attributes: { 
+            include: [
+                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
+                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
+            ],
+        },
+        include: [
+            { model: db.PostsLikes, attributes: [] },
+            { model: db.PostsComments, attributes: [] },
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
+        ],
+        group: ['Posts.id'],
+        raw: true, 
         nest: true,
         limit: limit,
         order: [['updatedAt', 'DESC']]
     })
 
-    posts = posts.map(post => ({...post, followType: true}))
+    posts = await Promise.all(posts.map(async (post) => {
+        let likePost = await db.PostsLikes.findOne({
+            where: { postId: +post.id },
+            attributes: [ 'userId' ],
+            raw: true
+        })
+        if (likePost && +likePost.userId === +user.id) {
+            return (
+                {...post, followType: true, liked: true}
+            )
+        } 
+        return (
+            {...post, followType: true, liked: false}
+        )
+    }))
     return posts
 }
 
 const getExplorePostsSV = async (email, limit) => {
-    let user = await db.Users.findOne({
-        where: {email: email}
-    })
+    let user = await db.Users.findOne({where: {email: email}})
     let followingListId = await db.Follows.findAll({
         where: { follower: +user.id },
         attributes: [ 'userToFollow' ],
@@ -88,14 +110,41 @@ const getExplorePostsSV = async (email, limit) => {
     let posts = [] 
     posts = await db.Posts.findAll({
         where: { userId: {[Op.not]: followingListId} },
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
-        raw: true,
+        subQuery: false,
+        attributes: { 
+            include: [
+                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
+                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
+        ],
+        },
+        include: [
+            { model: db.PostsLikes, attributes: [] },
+            { model: db.PostsComments, attributes: [] },
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
+        ],
+        group: ['Posts.id'],
+        raw: true, 
         nest: true,
         limit: limit,
         order: [['updatedAt', 'DESC']]
     })
 
-    posts = posts.map(post => ({...post, followType: false}))
+    posts = await Promise.all(posts.map(async (post) => {
+        let likePost = await db.PostsLikes.findOne({
+            where: { postId: +post.id },
+            attributes: [ 'userId' ],
+            raw: true
+        })
+        if (likePost && +likePost.userId === +user.id) {
+            return (
+                {...post, followType: false, liked: true}
+            )
+        } 
+        return (
+            {...post, followType: true, liked: false}
+        )
+    }))
+    
     return posts
 }
 
@@ -107,13 +156,53 @@ const getUserPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: user.id },
-        include:  { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },         
-        raw: true,
+        subQuery: false,
+        attributes: { 
+            include: [
+                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
+                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
+        ],
+        },
+        include: [
+            { model: db.PostsLikes, attributes: [] },
+            { model: db.PostsComments, attributes: [] },
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
+        ],
+        group: ['Posts.id'],
+        raw: true, 
         nest: true,
         limit: limit,
         order: [['updatedAt', 'DESC']]
     })
+    posts = await Promise.all(posts.map(async (post) => {
+        let likePost = await db.PostsLikes.findOne({
+            where: { postId: +post.id },
+            attributes: [ 'userId' ],
+            raw: true
+        })
+        if (likePost && +likePost.userId === +user.id) {
+            return (
+                {...post, liked: true}
+            )
+        } else {
+            return (
+                {...post, liked: false}
+            )
+        }
+    }))
     return posts
+}
+
+const countOnePostLikeSV = async (postId) => {
+    let data = await db.PostsLikes.findAll({
+        where: { postId: postId },
+        raw: true,
+    })
+    if (data && data.length > 0) {
+        return data.length
+    } else {
+        return 0
+    }
 }
 
 const likePostSV = async (email, postId) => {
@@ -121,7 +210,7 @@ const likePostSV = async (email, postId) => {
 
     if(user) {
         await db.PostsLikes.create({
-            userLike: +user.id,
+            userId: +user.id,
             postId: +postId,
         })
     }
@@ -134,7 +223,7 @@ const unlikePostSV = async (email, postId) => {
     if(user) {
         await db.PostsLikes.destroy({
             where: {
-                userLikey: +user.id,
+                userId: +user.id,
                 postId: +postId,
             }
         })
@@ -153,4 +242,5 @@ module.exports = {
     getExplorePostsSV,
     likePostSV,
     unlikePostSV,
+    countOnePostLikeSV
 }

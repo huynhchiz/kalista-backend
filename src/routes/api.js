@@ -40,6 +40,7 @@ const initApiRoutes = (app) => {
 
     router.post('/post/like', postController.likePost)
     router.post('/post/unlike', postController.unlikePost)
+    router.post('/post/count-like', postController.countOnePostLike)
 
 
     return app.use('/api', router)

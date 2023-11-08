@@ -4,13 +4,13 @@ module.exports = (sequelize, DataTypes) => {
    class PostsLikes extends Model {
       static associate(models) {
          PostsLikes.belongsTo(models.Posts, { foreignKey: 'postId' });
-         PostsLikes.belongsTo(models.Users, { foreignKey: 'userLike' });
+         PostsLikes.belongsTo(models.Users, { foreignKey: 'userId' });
       }
    }
    PostsLikes.init(
       {
         postId: DataTypes.INTEGER,
-        userLike: DataTypes.INTEGER,
+        userId: DataTypes.INTEGER,
       },
       {
          sequelize,

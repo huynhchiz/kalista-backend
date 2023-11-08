@@ -126,7 +126,7 @@ const getExplorePosts = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log('getPosts controller err: ', error);
+        console.log('getExplorePosts controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
             EC: '-5',
@@ -195,6 +195,26 @@ const unlikePost = async (req, res) => {
     }
 }
 
+const countOnePostLike = async (req, res) => {
+    try {
+        let data = await postService.countOnePostLikeSV(req.body.postId)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `Get like count success`,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('countOnePostLike controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 module.exports = {
     uploadImageCloudinary,
     uploadVideoCloudinary,
@@ -204,5 +224,6 @@ module.exports = {
     getUserPosts,
     getExplorePosts,
     likePost,
-    unlikePost
+    unlikePost,
+    countOnePostLike
 }

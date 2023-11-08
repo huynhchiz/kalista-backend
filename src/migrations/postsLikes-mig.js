@@ -13,7 +13,7 @@ module.exports = {
          postId: {
             type: Sequelize.INTEGER,
          },
-         userLike: {
+         userId: {
             type: Sequelize.INTEGER,
          },
 
