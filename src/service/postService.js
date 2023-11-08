@@ -81,7 +81,7 @@ const getFollowingPostsSV = async (email, limit) => {
 
     posts = await Promise.all(posts.map(async (post) => {
         let likePost = await db.PostsLikes.findOne({
-            where: { postId: +post.id },
+            where: { postId: +post.id, userId: +user.id },
             attributes: [ 'userId' ],
             raw: true
         })
@@ -109,7 +109,7 @@ const getExplorePostsSV = async (email, limit) => {
     
     let posts = [] 
     posts = await db.Posts.findAll({
-        where: { userId: {[Op.not]: followingListId} },
+        where: { userId: {[Op.notIn]: followingListId} },
         subQuery: false,
         attributes: { 
             include: [
@@ -131,7 +131,7 @@ const getExplorePostsSV = async (email, limit) => {
 
     posts = await Promise.all(posts.map(async (post) => {
         let likePost = await db.PostsLikes.findOne({
-            where: { postId: +post.id },
+            where: { postId: +post.id, userId: +user.id },
             attributes: [ 'userId' ],
             raw: true
         })
@@ -141,10 +141,9 @@ const getExplorePostsSV = async (email, limit) => {
             )
         } 
         return (
-            {...post, followType: true, liked: false}
+            {...post, followType: false, liked: false}
         )
     }))
-    
     return posts
 }
 
@@ -153,8 +152,7 @@ const getUserPostsSV = async (email, limit) => {
         where: {email: email}
     })
 
-    let posts = []
-    posts = await db.Posts.findAll({
+    let { count, rows } = await db.Posts.findAndCountAll({
         where: { userId: user.id },
         subQuery: false,
         attributes: { 
@@ -174,9 +172,10 @@ const getUserPostsSV = async (email, limit) => {
         limit: limit,
         order: [['updatedAt', 'DESC']]
     })
-    posts = await Promise.all(posts.map(async (post) => {
+
+    let posts = await Promise.all(rows.map(async (post) => {
         let likePost = await db.PostsLikes.findOne({
-            where: { postId: +post.id },
+            where: { postId: +post.id, userId: +user.id },
             attributes: [ 'userId' ],
             raw: true
         })
@@ -184,13 +183,15 @@ const getUserPostsSV = async (email, limit) => {
             return (
                 {...post, liked: true}
             )
-        } else {
-            return (
-                {...post, liked: false}
-            )
-        }
+        } return (
+            {...post, liked: false}
+        )
     }))
-    return posts
+
+    return {
+        posts: posts,
+        count: count.length
+    }
 }
 
 const countOnePostLikeSV = async (postId) => {
