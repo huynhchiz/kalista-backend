@@ -139,7 +139,6 @@ const getUserPosts = async (req, res) => {
     try {
         let data = await postService.getUserPostsSV(req.body.email, req.body.limit)
         if(data) {
-            console.log(data);
             return res.status(200).json({
                 EC: 0,
                 EM: 'Get posts success',

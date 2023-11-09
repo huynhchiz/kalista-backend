@@ -29,6 +29,8 @@ const initApiRoutes = (app) => {
     router.post('/user/follow', followController.follow)
     router.post('/user/unfollow', followController.unfollow)
 
+    router.post('/user/other/read-info', userController.getOtherUserInfo)
+
     router.post('/post/upload-cloudinary-image', upload.single('image'), postController.uploadImageCloudinary)
     router.post('/post/upload-cloudinary-video', upload.single('video'), postController.uploadVideoCloudinary)
     router.post('/post/upload', postController.uploadPost)
@@ -41,7 +43,6 @@ const initApiRoutes = (app) => {
     router.post('/post/like', postController.likePost)
     router.post('/post/unlike', postController.unlikePost)
     router.post('/post/count-like', postController.countOnePostLike)
-
 
     return app.use('/api', router)
 }

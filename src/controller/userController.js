@@ -126,6 +126,31 @@ const deleteUserAvatar = async (req, res) => {
     }
 }
 
+const getOtherUserInfo = async (req, res) => {
+    try {
+        let data = await userService.getOtherUserInfoSV(req.body.email)
+        if(data) {
+            return res.status(200).json({
+                EM: 'getOtherUserInfo success',
+                EC: 0,
+                DT: data,
+            });
+        }
+    } catch (error) {
+        console.log('getOtherUserInfo controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-1',
+            DT: '',
+        });
+    }
+}
+
 module.exports = {
-    getAccount, refreshNewToken, uploadAvatar, getUserAvatar, deleteUserAvatar
+    getAccount,
+    refreshNewToken,
+    uploadAvatar,
+    getUserAvatar,
+    deleteUserAvatar,
+    getOtherUserInfo
 }

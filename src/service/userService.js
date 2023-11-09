@@ -70,6 +70,17 @@ const deleteUserAvatar = async (email) => {
     }
 }
 
+const getOtherUserInfoSV = async (email) => {
+    let user = await db.Users.findOne({
+        where: { email: email },
+        attributes: [ 'id', 'email', 'username', 'address', 'phone', 'avatar' ]
+    })
+    return user
+}
+
 module.exports = {
-    uploadUserAvatar, getUserAvatar, deleteUserAvatar
+    uploadUserAvatar,
+    getUserAvatar,
+    deleteUserAvatar,
+    getOtherUserInfoSV
 }
