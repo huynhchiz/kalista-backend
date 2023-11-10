@@ -215,6 +215,26 @@ const countOnePostLike = async (req, res) => {
     }
 }
 
+const getOnePost = async (req, res) => {
+    try {
+        let data = await postService.getOnePostSV(req.user.email, req.params.postId)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `Get one post success`,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getOnePost controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 module.exports = {
     uploadImageCloudinary,
     uploadVideoCloudinary,
@@ -225,5 +245,6 @@ module.exports = {
     getExplorePosts,
     likePost,
     unlikePost,
-    countOnePostLike
+    countOnePostLike,
+    getOnePost
 }

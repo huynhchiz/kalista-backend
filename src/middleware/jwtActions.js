@@ -53,10 +53,11 @@ const passCheckUserJwtPaths = [
     '/', '/login', '/logout', '/register', 
     '/refresh-token', '/post/read', '/post/read-user',
     '/user/following/read', '/user/follower/read', '/post/count-like',
-    '/user/other/read-info'
+    '/user/other/read-info',
 ]
 const checkUserJwt = (req, res, next) => {
     if (passCheckUserJwtPaths.includes(req.path)) return next();
+    // if (passCheckUserJwtPaths.some(item => req.path.includes(item))) return next();
 
     let cookies = req.cookies; // get cookies from client
     if (cookies && cookies.accessToken) {
@@ -101,12 +102,11 @@ const passCheckUserPermissionPaths = [
     '/', '/login', '/logout', '/register',
     '/account', '/refresh-token', '/post/read', '/post/read-user',
     '/user/following/read', '/user/follower/read', '/post/count-like',
-    '/user/other/read-info'
+    '/user/other/read-info',
 ]
 const checkUserPermission = (req, res, next) => {
-    if (passCheckUserPermissionPaths.includes(req.path)) {
-        return next();
-    }
+    if (passCheckUserPermissionPaths.includes(req.path)) return next();
+    // if (passCheckUserPermissionPaths.some(item => req.path.includes(item))) return next();
 
     if (req.user && +req.user === -100) {
         return res.status(403).json({

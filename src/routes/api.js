@@ -39,6 +39,7 @@ const initApiRoutes = (app) => {
     router.post('/post/read-following', postController.getFollowingPosts)
     router.post('/post/read-not-following', postController.getExplorePosts)
     router.post('/post/read-user', postController.getUserPosts)
+    router.get('/post/preview/:postId', postController.getOnePost)
 
     router.post('/post/like', postController.likePost)
     router.post('/post/unlike', postController.unlikePost)

@@ -233,6 +233,40 @@ const unlikePostSV = async (email, postId) => {
     return postId
 }
 
+const getOnePostSV = async (email, postId) => {
+    let user = await db.Users.findOne({where: {email: email}})
+    let post = await db.Posts.findOne({
+        where: { id: +postId },
+        subQuery: false,
+        attributes: { 
+            include: [
+                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
+                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
+        ],
+        },
+        include: [
+            { model: db.PostsLikes, attributes: [] },
+            { model: db.PostsComments, attributes: [] },
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
+        ],      
+        group: ['Posts.id'],
+        raw: true,
+        nest: true,
+    })
+
+    let likePost = await db.PostsLikes.findOne({
+        where: { postId: +post.id, userId: +user.id },
+        attributes: [ 'userId' ],
+        raw: true
+    })
+
+    if (likePost && +likePost.userId === +user.id) {
+        return {...post, liked: true}
+    }
+    
+    return {...post, liked: false}
+}
+
 module.exports = {
     uploadImageCloudinarySV,
     uploadVideoCloudinarySV,
@@ -243,5 +277,6 @@ module.exports = {
     getExplorePostsSV,
     likePostSV,
     unlikePostSV,
-    countOnePostLikeSV
+    countOnePostLikeSV,
+    getOnePostSV
 }
