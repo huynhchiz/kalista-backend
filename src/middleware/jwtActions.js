@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config()
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'accesstokensecrethuynhchi'
-const ACCESS_TOKEN_EXPRIES = process.env.ACCESS_TOKEN_EXPRIES || '30s'
+const ACCESS_TOKEN_EXPRIES = process.env.ACCESS_TOKEN_EXPRIES || '30m'
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refreshtokensecrethuynhchi'
 const REFRESH_TOKEN_EXPIRES = process.env.REFRESH_TOKEN_EXPIRES || '1day'
 
