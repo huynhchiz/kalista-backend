@@ -201,9 +201,8 @@ const countOnePostLikeSV = async (postId) => {
     })
     if (data && data.length > 0) {
         return data.length
-    } else {
-        return 0
     }
+    return 0
 }
 
 const likePostSV = async (email, postId) => {

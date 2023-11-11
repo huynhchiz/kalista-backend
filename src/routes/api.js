@@ -4,6 +4,7 @@ import signController from '../controller/signController'
 import userController from '../controller/userController'
 import postController from '../controller/postController'
 import followController from '../controller/followController'
+import commentPostController from "../controller/commentPostController";
 
 import { checkUserJwt, checkUserPermission } from '../middleware/jwtActions';
 import { upload } from "../middleware/multer";
@@ -44,6 +45,8 @@ const initApiRoutes = (app) => {
     router.post('/post/like', postController.likePost)
     router.post('/post/unlike', postController.unlikePost)
     router.post('/post/count-like', postController.countOnePostLike)
+
+    router.post('/post/comment/create', commentPostController.createComment )
 
     return app.use('/api', router)
 }
