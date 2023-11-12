@@ -45,8 +45,13 @@ const initApiRoutes = (app) => {
     router.post('/post/like', postController.likePost)
     router.post('/post/unlike', postController.unlikePost)
     router.post('/post/count-like', postController.countOnePostLike)
+    router.post('/post/count-comment', postController.countOnePostComments)
 
-    router.post('/post/comment/create', commentPostController.createComment )
+    router.post('/post/comment/create', commentPostController.createComment)
+    router.post('/post/comment/get', commentPostController.getOnePostComments)
+    router.post('/post/comment/like', commentPostController.likeComment)
+    router.post('/post/comment/unlike', commentPostController.unlikeComment)
+    router.post('/post/comment/count-like', commentPostController.countCommentLikes)
 
     return app.use('/api', router)
 }

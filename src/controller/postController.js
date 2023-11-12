@@ -213,6 +213,24 @@ const countOnePostLike = async (req, res) => {
     }
 }
 
+const countOnePostComments = async (req, res) => {
+    try {
+        let data = await postService.countOnePostCommentsSV(req.body.postId)
+        return res.status(200).json({
+            EC: 0,
+            EM: `Get comments count success`,
+            DT: data,
+        })
+    } catch (error) {
+        console.log('countOnePostComments controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 const getOnePost = async (req, res) => {
     try {
         let data = await postService.getOnePostSV(req.user.email, req.params.postId)
@@ -244,5 +262,6 @@ module.exports = {
     likePost,
     unlikePost,
     countOnePostLike,
+    countOnePostComments,
     getOnePost
 }

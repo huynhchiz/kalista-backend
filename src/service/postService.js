@@ -60,19 +60,7 @@ const getFollowingPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: followingListId },
-        subQuery: false,
-        attributes: { 
-            include: [
-                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
-                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
-            ],
-        },
-        include: [
-            { model: db.PostsLikes, attributes: [] },
-            { model: db.PostsComments, attributes: [] },
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
-        ],
-        group: ['Posts.id'],
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
         raw: true, 
         nest: true,
         limit: limit,
@@ -85,13 +73,19 @@ const getFollowingPostsSV = async (email, limit) => {
             attributes: [ 'userId' ],
             raw: true
         })
+        let countLike = await db.PostsLikes.count({
+            where: { postId: +post.id }
+        })
+        let countComment = await db.PostsComments.count({
+            where: { postId: +post.id }
+        })
         if (likePost && +likePost.userId === +user.id) {
             return (
-                {...post, followType: true, liked: true}
+                {...post, countLike, countComment, liked: true}
             )
         } 
         return (
-            {...post, followType: true, liked: false}
+            {...post, countLike, countComment, liked: false}
         )
     }))
     return posts
@@ -110,19 +104,8 @@ const getExplorePostsSV = async (email, limit) => {
     let posts = [] 
     posts = await db.Posts.findAll({
         where: { userId: {[Op.notIn]: followingListId} },
-        subQuery: false,
-        attributes: { 
-            include: [
-                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
-                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
-        ],
-        },
-        include: [
-            { model: db.PostsLikes, attributes: [] },
-            { model: db.PostsComments, attributes: [] },
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
-        ],
-        group: ['Posts.id'],
+        include: 
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
         raw: true, 
         nest: true,
         limit: limit,
@@ -135,13 +118,19 @@ const getExplorePostsSV = async (email, limit) => {
             attributes: [ 'userId' ],
             raw: true
         })
+        let countLike = await db.PostsLikes.count({
+            where: { postId: +post.id }
+        })
+        let countComment = await db.PostsComments.count({
+            where: { postId: +post.id }
+        })
         if (likePost && +likePost.userId === +user.id) {
             return (
-                {...post, followType: false, liked: true}
+                {...post, countLike, countComment, liked: true}
             )
         } 
         return (
-            {...post, followType: false, liked: false}
+            {...post, countLike, countComment, liked: false}
         )
     }))
     return posts
@@ -154,19 +143,8 @@ const getUserPostsSV = async (email, limit) => {
 
     let { count, rows } = await db.Posts.findAndCountAll({
         where: { userId: user.id },
-        subQuery: false,
-        attributes: { 
-            include: [
-                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
-                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
-        ],
-        },
-        include: [
-            { model: db.PostsLikes, attributes: [] },
-            { model: db.PostsComments, attributes: [] },
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
-        ],
-        group: ['Posts.id'],
+        include: 
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
         raw: true, 
         nest: true,
         limit: limit,
@@ -179,12 +157,19 @@ const getUserPostsSV = async (email, limit) => {
             attributes: [ 'userId' ],
             raw: true
         })
+        let countLike = await db.PostsLikes.count({
+            where: { postId: +post.id }
+        })
+        let countComment = await db.PostsComments.count({
+            where: { postId: +post.id }
+        })
         if (likePost && +likePost.userId === +user.id) {
             return (
-                {...post, liked: true}
+                {...post, countLike, countComment, liked: true}
             )
-        } return (
-            {...post, liked: false}
+        } 
+        return (
+            {...post, countLike, countComment, liked: false}
         )
     }))
 
@@ -196,6 +181,17 @@ const getUserPostsSV = async (email, limit) => {
 
 const countOnePostLikeSV = async (postId) => {
     let data = await db.PostsLikes.findAll({
+        where: { postId: postId },
+        raw: true,
+    })
+    if (data && data.length > 0) {
+        return data.length
+    }
+    return 0
+}
+
+const countOnePostCommentsSV = async (postId) => {
+    let data = await db.PostsComments.findAll({
         where: { postId: postId },
         raw: true,
     })
@@ -236,19 +232,7 @@ const getOnePostSV = async (email, postId) => {
     let user = await db.Users.findOne({where: {email: email}})
     let post = await db.Posts.findOne({
         where: { id: +postId },
-        subQuery: false,
-        attributes: { 
-            include: [
-                [Sequelize.fn("COUNT", Sequelize.col("PostsLikes.id")), "postLikeCount"],
-                [Sequelize.fn("COUNT", Sequelize.col("PostsComments.id")), "postCommentCount"]
-        ],
-        },
-        include: [
-            { model: db.PostsLikes, attributes: [] },
-            { model: db.PostsComments, attributes: [] },
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] }
-        ],      
-        group: ['Posts.id'],
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
         raw: true,
         nest: true,
     })
@@ -258,12 +242,18 @@ const getOnePostSV = async (email, postId) => {
         attributes: [ 'userId' ],
         raw: true
     })
+    let countLike = await db.PostsLikes.count({
+        where: { postId: +post.id }
+    })
+    let countComment = await db.PostsComments.count({
+        where: { postId: +post.id }
+    })
 
     if (likePost && +likePost.userId === +user.id) {
-        return {...post, liked: true}
+        return {...post, countComment, countLike, liked: true}
     }
     
-    return {...post, liked: false}
+    return {...post, countLike, countComment, liked: false}
 }
 
 module.exports = {
@@ -277,5 +267,6 @@ module.exports = {
     likePostSV,
     unlikePostSV,
     countOnePostLikeSV,
+    countOnePostCommentsSV,
     getOnePostSV
 }

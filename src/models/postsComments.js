@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       static associate(models) {
          PostsComments.belongsTo(models.Posts, { foreignKey: 'postId' });
          PostsComments.belongsTo(models.Users, { foreignKey: 'userId' });
+         PostsComments.hasMany(models.CommentsLikes);
       }
    }
    PostsComments.init(
@@ -12,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
         comment: DataTypes.STRING,
         userId: DataTypes.INTEGER,
         postId: DataTypes.INTEGER,
+        date: DataTypes.STRING,
+        time: DataTypes.STRING,
       },
       {
          sequelize,
