@@ -3,8 +3,11 @@ import express from "express";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
-import initApiRoutes from "./routes/api";
 import configCors from "./config/configCors";
+
+import accountRoutes from './routes/account.js';
+import userRoutes from './routes/user.js';
+import postRoutes from './routes/post.js';
 
 dotenv.config()
 
@@ -13,8 +16,6 @@ const PORT = process.env.PORT || 3333
 
 // config CORS
 configCors(app);
-
-
 // config body-parser
 // app.use(bodyParser.urlencoded({ extended: true, limit: "25mb" }));
 // app.use(bodyParser.json({ limit: "25mb" }));
@@ -35,7 +36,9 @@ app.use(cookieParser());
 // app.use(express.json({ limit: "50mb" }));
 // app.use(express.urlencoded({ limit: "50mb" }));
 
-initApiRoutes(app)
+accountRoutes(app)
+userRoutes(app)
+postRoutes(app)
 
 app.use((req, res) => {
     res.send('404 not found!')
