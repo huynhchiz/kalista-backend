@@ -175,7 +175,7 @@ const getUserPostsSV = async (email, limit) => {
 
     return {
         posts: posts,
-        count: count.length
+        count: count
     }
 }
 

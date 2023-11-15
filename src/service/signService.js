@@ -98,6 +98,7 @@ const loginUser = async (userData) => {
 
             let userGroupWithRoles = await getUserGroupWithRoles(user)
             let payload = {
+               id: user.id,
                email: user.email,
                username: user.username,
                userGroupWithRoles,

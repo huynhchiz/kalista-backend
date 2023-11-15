@@ -97,7 +97,7 @@ const getFollowers = async (req, res) => {
 
 const getUsersFollowing = async (req, res) => {
     try {
-        let data = await followService.getUsersFollowingSV(req.body.email, req.body.limit)
+        let data = await followService.getUsersFollowingSV(req.body.email)
         if(data) {
             return res.status(200).json({
                 EC: 0,

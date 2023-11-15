@@ -46,7 +46,7 @@ const unfollowSV = async (email, emailToUnfollow) => {
     return -1 // user is not follow yet
 }
 
-const getUsersFollowingSV = async (email, limit) => {
+const getUsersFollowingSV = async (email) => {
     let user = await db.Users.findOne({ where: { email: email } })
     let followingListId = await db.Follows.findAll({
         where: { follower: +user.id },
@@ -56,15 +56,15 @@ const getUsersFollowingSV = async (email, limit) => {
     followingListId = followingListId.map(item => (item.userToFollow))
 
     let data = {}
-    const { count, rows } = await db.Users.findAndCountAll({ where: { id: followingListId }, limit: limit })
+    const rows = await db.Users.findAll({ where: { id: followingListId } })
     data = {
-        countFollowing: count,
+        countFollowing: rows.length || 0,
         listFollowing: rows
     }
     return data
 }
 
-const getFollowersSV = async (email, limit) => {
+const getFollowersSV = async (email) => {
     let user = await db.Users.findOne({ where: { email: email } })
     let followersListId = await db.Follows.findAll({
         where: { userToFollow: +user.id },
@@ -74,9 +74,9 @@ const getFollowersSV = async (email, limit) => {
     followersListId = followersListId.map(item => (item.follower))
 
     let data = {}
-    const { count, rows } = await db.Users.findAndCountAll({ where: { id: followersListId }, limit: limit })
+    const rows = await db.Users.findAll({ where: { id: followersListId } })
     data = {
-        countFollower: count,
+        countFollower: rows.length || 0,
         listFollower: rows
     }
     return data

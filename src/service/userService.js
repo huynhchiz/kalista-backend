@@ -70,6 +70,37 @@ const deleteUserAvatar = async (email) => {
     }
 }
 
+const getAccountInfo = async (email) => {
+    let user = await db.Users.findOne({
+        where: { email: email },
+        attributes: ['email', 'avatar', 'address', 'id', 'phone', 'username'],
+        raw: true,
+    })
+    // followings
+    let followingListId = await db.Follows.findAll({
+        where: { follower: +user.id },
+        attributes: [ 'userToFollow' ],
+        raw: true,
+    })
+    followingListId = followingListId.map(item => (item.userToFollow))
+    const listFollowing = await db.Users.findAll({ where: { id: followingListId } })
+
+    // followers
+    let followersListId = await db.Follows.findAll({
+        where: { userToFollow: +user.id },
+        attributes: [ 'follower' ],
+        raw: true,
+    })
+    followersListId = followersListId.map(item => (item.follower))
+    const listFollower = await db.Users.findAll({ where: { id: followersListId } })
+
+    return {
+        user,
+        listFollowing,
+        listFollower
+    }
+}
+
 const getOtherUserInfoSV = async (email) => {
     let user = await db.Users.findOne({
         where: { email: email },
@@ -82,5 +113,6 @@ module.exports = {
     uploadUserAvatar,
     getUserAvatar,
     deleteUserAvatar,
-    getOtherUserInfoSV
+    getOtherUserInfoSV,
+    getAccountInfo
 }
