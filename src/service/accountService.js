@@ -156,7 +156,16 @@ const getInfoSV = async (userId) => {
       raw: true,
   })
 
-  return user
+  let countFollower = await db.Follows.count({ where: { userToFollow: +user.id } })
+  let countFollowing = await db.Follows.count({ where: { follower: +user.id } })
+  let countPost = await db.Posts.count({ where: { userId: +user.id } })
+
+  return {
+      ...user,
+      countFollower,
+      countFollowing,
+      countPost
+  }
 }
 
 const uploadAvatarSV = async (userId, avatar) =>  {
@@ -233,7 +242,7 @@ const unfollowSV = async (userId, userUnfollowId) => {
    return -1 // user is not follow yet
 }
 
-const getFollowersSV = async (userId) => {
+const getFollowersSV = async (userId, limit) => {
    let user = await db.Users.findOne({ where: { id: +userId } })
    let followersListId = await db.Follows.findAll({
       where: { userToFollow: +user.id },
@@ -243,15 +252,19 @@ const getFollowersSV = async (userId) => {
    followersListId = followersListId.map(item => (item.follower))
 
    let data = {}
-   const listFollower = await db.Users.findAll({ where: { id: followersListId } })
+   const { count, rows } = await db.Users.findAndCountAll({
+      where: { id: followersListId },
+      raw: true,
+      limit: +limit
+   })
    data = {
-      countFollower: listFollower.length || 0,
-      listFollower: listFollower
+      countFollower: count || 0,
+      listFollower: rows
    }
    return data
 }
 
-const getFollowingsSV = async (userId) => {
+const getFollowingsSV = async (userId, limit) => {
    let user = await db.Users.findOne({ where: { id: +userId } })
    let followingListId = await db.Follows.findAll({
        where: { follower: +user.id },
@@ -261,12 +274,56 @@ const getFollowingsSV = async (userId) => {
    followingListId = followingListId.map(item => (item.userToFollow))
 
    let data = {}
-   const listFollowing = await db.Users.findAll({ where: { id: followingListId } })
+   const { count, rows } = await db.Users.findAndCountAll({
+      where: { id: followingListId },
+      raw: true,
+      limit: +limit
+   })
    data = {
-       countFollowing: listFollowing.length || 0,
-       listFollowing: listFollowing
+       countFollowing: count || 0,
+       listFollowing: rows
    }
    return data
+}
+
+const getPostsSV = async (userId, limit) => {
+   const { count, rows } = await db.Posts.findAndCountAll({
+      where: { userId: +userId },
+      include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+      raw: true, 
+      nest: true,
+      limit: +limit,
+      order: [['updatedAt', 'DESC']]
+   })
+
+   let posts = await Promise.all(rows.map(async (post) => {
+      let countLike = await db.PostsLikes.count({
+         where: { postId: +post.id }
+      })
+      let countComment = await db.PostsComments.count({
+         where: { postId: +post.id }
+      })
+
+      let likePost = await db.PostsLikes.findOne({
+         where: { postId: +post.id, userId: +userId },
+         attributes: [ 'userId' ],
+         raw: true
+      })
+
+      if (likePost && +likePost.userId === +userId) {
+         return (
+            {...post, countLike, countComment, liked: true}
+         )
+      } 
+      return (
+         {...post, countLike, countComment, liked: false}
+      )
+   }))
+
+   return {
+      list: posts,
+      count: count
+   }
 }
 
 module.exports = {
@@ -280,5 +337,6 @@ module.exports = {
    followSV,
    unfollowSV,
    getFollowersSV,
-   getFollowingsSV
+   getFollowingsSV,
+   getPostsSV
 }

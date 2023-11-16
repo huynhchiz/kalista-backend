@@ -1,7 +1,7 @@
 import { cloudinary } from '../config/configCloudinary'
 import db from '../models/index'
 import { Op } from 'sequelize'
-import Sequelize from 'sequelize'
+// import Sequelize from 'sequelize'
 
 const uploadImageCloudinarySV = async (image) => {
     let data = await cloudinary.uploader.upload(`./${image.path}`)
@@ -17,9 +17,9 @@ const uploadVideoCloudinarySV = async (video) => {
     }
 }
 
-const uploadPostSV = async (email, src, alt, caption, time, date, type) => {
+const uploadPostSV = async (userId, src, alt, caption, time, date, type) => {
     let user = await db.Users.findOne({
-        where: {email: email}
+        where: {id: userId}
     })
     if (user) {
         await db.Posts.create({
@@ -29,25 +29,25 @@ const uploadPostSV = async (email, src, alt, caption, time, date, type) => {
             time: time,
             date: date,
             type: type,
-            userId: user.id
+            userId: +user.id
         })
     }
 }
 
-const getPostsSV = async (limit) => {
-    let posts = [] 
-    posts = await db.Posts.findAll({
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },         
-        raw: true,
-        nest: true,
-        limit: limit,
-        order: [['updatedAt', 'DESC']]
-    })
+// const getPostsSV = async (limit) => {
+//     let posts = [] 
+//     posts = await db.Posts.findAll({
+//         include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },         
+//         raw: true,
+//         nest: true,
+//         limit: limit,
+//         order: [['updatedAt', 'DESC']]
+//     })
 
-    return posts
-}
+//     return posts
+// }
 
-const getFollowingPostsSV = async (email, limit) => {
+const getHomePostsSV = async (email, limit) => {
     let user = await db.Users.findOne({where: {email: email}})
     let followingListId = await db.Follows.findAll({
         where: { follower: +user.id },
@@ -60,10 +60,10 @@ const getFollowingPostsSV = async (email, limit) => {
     let posts = []
     posts = await db.Posts.findAll({
         where: { userId: followingListId },
-        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email', 'id' ] },
         raw: true, 
         nest: true,
-        limit: limit,
+        limit: +limit,
         order: [['updatedAt', 'DESC']]
     })
 
@@ -144,7 +144,7 @@ const getUserPostsSV = async (email, limit) => {
     let { count, rows } = await db.Posts.findAndCountAll({
         where: { userId: user.id },
         include: 
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+            { model: db.Users, attributes: [ 'username', 'avatar', 'email', 'id' ] },
         raw: true, 
         nest: true,
         limit: limit,
@@ -260,9 +260,9 @@ module.exports = {
     uploadImageCloudinarySV,
     uploadVideoCloudinarySV,
     uploadPostSV,
-    getPostsSV,
+    // getPostsSV,
     getUserPostsSV,
-    getFollowingPostsSV,
+    getHomePostsSV,
     getExplorePostsSV,
     likePostSV,
     unlikePostSV,

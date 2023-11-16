@@ -8,7 +8,6 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refreshtokense
 const REFRESH_TOKEN_EXPIRES = process.env.REFRESH_TOKEN_EXPIRES || '1day'
 
 const createAccessToken = (payload) => {
-    console.log({payload});
     let accessToken = null
     try {
         accessToken = jwt.sign(

@@ -14,15 +14,18 @@ const accountRoutes = (app) => {
 
     router.get('/get-info', accountController.getInfo)
     router.post('/refresh-token', accountController.refreshToken)
+    router.get('/get-posts/:limit', accountController.getPosts)
 
     router.post('/upload-avatar', accountController.uploadAvatar)
     router.get('/get-avatar', accountController.getAvatar)
     router.post('/delete-avatar', accountController.deleteAvatar)
 
+    ////////
     router.post('/follow', accountController.follow)
     router.post('/unfollow', accountController.unfollow)
-    router.get('/get-followers', accountController.getFollowers)
-    router.get('/get-followings', accountController.getFollowings)
+
+    router.get('/get-followers/:limit', accountController.getFollowers)
+    router.get('/get-followings/:limit', accountController.getFollowings)
 
     return app.use('/account', router)
 }

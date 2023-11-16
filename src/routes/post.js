@@ -15,7 +15,7 @@ const postRoutes = (app) => {
     router.post('/upload-cloudinary-video', upload.single('video'), postController.uploadVideoCloudinary)
     router.post('/upload', postController.uploadPost)
 
-    router.get('/get-home', postController.getFollowingPosts)
+    router.get('/get-home/:limit', postController.getHomePosts)
     router.get('/get-explore', postController.getExplorePosts)
     router.get('/get-user/:userId', postController.getUserPosts)
 

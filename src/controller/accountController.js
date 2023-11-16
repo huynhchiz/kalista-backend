@@ -88,7 +88,6 @@ const logout = async (req, res) => {
 }
 
 const getInfo = async (req, res) => {
-    console.log(req.user.userId);
     try {
         let data = await accountService.getInfoSV(req.user.userId)
         if(data) {
@@ -104,7 +103,7 @@ const getInfo = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log('getAccount controller err: ', error);
+        console.log('getInfo controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
             EC: '-1',
@@ -307,7 +306,7 @@ const unfollow = async (req, res) => {
 
 const getFollowers = async (req, res) => {
     try {
-        let data = await accountService.getFollowersSV(req.user.userId)
+        let data = await accountService.getFollowersSV(req.user.userId, req.params.limit)
         if(data) {
             return res.status(200).json({
                 EC: 0,
@@ -317,7 +316,7 @@ const getFollowers = async (req, res) => {
         }
         
     } catch (error) {
-        console.log('unfollow controller err: ', error);
+        console.log('getFollowers controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
             EC: '-5',
@@ -328,7 +327,7 @@ const getFollowers = async (req, res) => {
 
 const getFollowings = async (req, res) =>  {
     try {
-        let data = await accountService.getFollowingsSV(req.user.userId)
+        let data = await accountService.getFollowingsSV(req.user.userId, req.params.limit)
         if(data) {
             return res.status(200).json({
                 EC: 0,
@@ -338,7 +337,27 @@ const getFollowings = async (req, res) =>  {
         }
         
     } catch (error) {
-        console.log('unfollow controller err: ', error);
+        console.log('getFollowings controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getPosts = async (req, res) => {
+    try {
+        let data = await accountService.getPostsSV(req.user.userId, req.params.limit)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `getPosts success`,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getPosts controller err: ', error);
         return res.status(500).json({
             EM: 'error from server',
             EC: '-5',
@@ -359,5 +378,6 @@ module.exports = {
     follow,
     unfollow,
     getFollowers,
-    getFollowings
+    getFollowings,
+    getPosts
 }

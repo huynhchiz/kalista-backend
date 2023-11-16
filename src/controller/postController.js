@@ -6,7 +6,7 @@ const uploadImageCloudinary = async (req, res) => {
         if (data) {
             return res.status(200).json({
                 EC: 0,
-                EM: 'Upload image tp Cloudinary success',
+                EM: 'uploadImageCloudinary success',
                 DT: data
             })
         }
@@ -26,7 +26,7 @@ const uploadVideoCloudinary = async (req, res) => {
         if (data) {
             return res.status(200).json({
                 EC: 0,
-                EM: 'Upload video to Cloudinary success',
+                EM: 'uploadVideoCloudinary success',
                 DT: data
             })
         }
@@ -42,7 +42,7 @@ const uploadVideoCloudinary = async (req, res) => {
 
 const uploadPost = async (req, res) => {
     try {
-        let email = req.user.email
+        let userId = req.user.userId
 
         let src = req.body.src
         let alt = req.body.alt
@@ -51,17 +51,17 @@ const uploadPost = async (req, res) => {
         let date = req.body.date
         let type = req.body.type
         
-        if (!email || !src || !alt || !time || !date || !type) {
+        if (!userId || !src || !alt || !time || !date || !type) {
             return res.status(200).json({
                EM: 'Missing required parameters!',
                EC: '1',
                DT: '',
         })}
 
-        await postService.uploadPostSV(email, src, alt, caption, time, date, type)
+        await postService.uploadPostSV(userId, src, alt, caption, time, date, type)
         return res.status(200).json({
             EC: 0,
-            EM: 'Upload post success',
+            EM: 'uploadPost success',
             DT: '',
         })
 
@@ -75,29 +75,29 @@ const uploadPost = async (req, res) => {
     }
 }
 
-const getPosts = async (req, res) => {
-    try {
-        let data = await postService.getPostsSV(req.body.limit)
-        if(data && data.length > 0) {
-            return res.status(200).json({
-                EC: 0,
-                EM: 'Get posts success',
-                DT: data,
-            })
-        }
-    } catch (error) {
-        console.log('getPosts controller err: ', error);
-        return res.status(500).json({
-            EM: 'error from server',
-            EC: '-5',
-            DT: '',
-        });
-    }
-}
+// const getPosts = async (req, res) => {
+//     try {
+//         let data = await postService.getPostsSV(req.body.limit)
+//         if(data && data.length > 0) {
+//             return res.status(200).json({
+//                 EC: 0,
+//                 EM: 'Get posts success',
+//                 DT: data,
+//             })
+//         }
+//     } catch (error) {
+//         console.log('getPosts controller err: ', error);
+//         return res.status(500).json({
+//             EM: 'error from server',
+//             EC: '-5',
+//             DT: '',
+//         });
+//     }
+// }
 
-const getFollowingPosts = async (req, res) => {
+const getHomePosts = async (req, res) => {
     try {
-        let data = await postService.getFollowingPostsSV(req.user.email, req.body.limit)
+        let data = await postService.getHomePostsSV(req.user.email, req.params.limit)
         if(data && data.length > 0) {
             return res.status(200).json({
                 EC: 0,
@@ -255,8 +255,8 @@ module.exports = {
     uploadImageCloudinary,
     uploadVideoCloudinary,
     uploadPost,
-    getPosts,
-    getFollowingPosts,
+    // getPosts,
+    getHomePosts,
     getUserPosts,
     getExplorePosts,
     likePost,
