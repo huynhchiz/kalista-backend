@@ -197,47 +197,42 @@ const deleteAvatarSV = async (userId) => {
 }
 
 const followSV = async (userId, userFollowId) =>  {
-   let user = await db.Users.findOne({where: {id: +userId}})
-   let userToFollow = await db.Users.findOne({where: {id: +userFollowId}})
 
    // tim ra nhung user minh dang follow
    let usersAlreadyFollowing = await db.Follows.findAll({
-      where: { follower: +user.id },
+      where: { follower: +userId },
       raw: true,
       attributes: [ 'userToFollow' ]
    })
-   followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
-   if (followingIds.includes(userToFollow.id)) {
+   let followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
+   if (followingIds.includes(userFollowId)) {
       return -1 // user is already following
    }
 
    await db.Follows.create({
-      follower: +user.id,
-      userToFollow: +userToFollow.id
+      follower: +userId,
+      userToFollow: +userFollowId
    })
 
-   return userToFollow.username
+   return userFollowId
 }
 
 const unfollowSV = async (userId, userUnfollowId) => {
-   let user = await db.Users.findOne({where: {id: +userId}})
-   let userToUnFollow = await db.Users.findOne({where: {id: +userUnfollowId}})
-
    // tim ra nhung user minh dang follow
    let usersAlreadyFollowing = await db.Follows.findAll({
-      where: { follower: user.id },
+      where: { follower: +userId },
       raw: true,
       attributes: [ 'userToFollow' ]
    })
-   followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
-   if (followingIds.includes(userToUnFollow.id)) {
+   let followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
+   if (followingIds.includes(userUnfollowId)) {
       await db.Follows.destroy({
          where: {
-            follower: +user.id,
-            userToFollow: +userToUnFollow.id
+            follower: +userId,
+            userToFollow: +userUnfollowId
          }
       })
-      return userToUnFollow.username
+      return userUnfollowId
    }
    return -1 // user is not follow yet
 }

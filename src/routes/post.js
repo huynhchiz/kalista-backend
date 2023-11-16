@@ -13,12 +13,13 @@ const postRoutes = (app) => {
 
     router.post('/upload-cloudinary-image', upload.single('image'), postController.uploadImageCloudinary)
     router.post('/upload-cloudinary-video', upload.single('video'), postController.uploadVideoCloudinary)
-    router.post('/upload', postController.uploadPost)
+    router.post('/upload-post', postController.uploadPost)
 
-    router.get('/get-home/:limit', postController.getHomePosts)
-    router.get('/get-explore', postController.getExplorePosts)
-    router.get('/get-user/:userId', postController.getUserPosts)
+    router.get('/get-home-posts/:limit', postController.getHomePosts)
+    router.get('/get-explore-posts', postController.getExplorePosts)
+    router.get('/get-user-posts/:userId', postController.getUserPosts)
 
+    // 
     router.post('/like', postController.likePost)
     router.post('/unlike', postController.unlikePost)
     router.get('/count-like', postController.countOnePostLike)
