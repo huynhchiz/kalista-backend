@@ -182,6 +182,38 @@ const getInfoOnePostSV = async (accountId, postId) => {
     )
 }
 
+const getPostCommentsSV = async (accountId, postId, limit) =>  {
+    let comments = await db.PostsComments.findAll({
+        where: { postId: +postId },
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email', 'id' ] },
+        raw: true,
+        nest: true,
+        limit: +limit,
+        order: [['updatedAt', 'DESC']]
+    })
+    
+    comments = await Promise.all(comments.map(async (comment) => {
+        let likedComment = await db.CommentsLikes.count({
+            where: { postsCommentId: +comment.id, userId: +accountId },
+        })
+        
+        let countLike = await db.CommentsLikes.count({
+            where: { postsCommentId: +comment.id }
+        })
+
+        if (likedComment && +likedComment >= 1) {
+            return (
+                {...comment, countLike, liked: true}
+            )
+        } 
+        return (
+            {...comment, countLike, liked: false}
+        )
+    }))
+
+    return comments
+}
+
 /////////////
 
 const countOnePostLikeSV = async (postId) => {
@@ -244,6 +276,7 @@ module.exports = {
     likePostSV,
     unlikePostSV,
     getInfoOnePostSV,
+    getPostCommentsSV,
 
     ////
     countOnePostLikeSV,
