@@ -17,11 +17,13 @@ const postRoutes = (app) => {
 
     router.get('/get-home-posts/:limit', postController.getHomePosts)
     router.get('/get-explore-posts', postController.getExplorePosts)
-    router.get('/get-user-posts/:userId', postController.getUserPosts)
 
-    // 
-    router.post('/like', postController.likePost)
-    router.post('/unlike', postController.unlikePost)
+    router.post('/like-post', postController.likePost)
+    router.post('/unlike-post', postController.unlikePost)
+
+    router.get('/get-post-info/:postId', postController.getInfoOnePost)
+    
+    //////
     router.get('/count-like', postController.countOnePostLike)
     router.get('/count-comment', postController.countOnePostComments)
 

@@ -21,7 +21,6 @@ const getInfo = async (req, res) => {
 }
 
 const getUserPosts = async (req, res) => {
-    console.log(req.params);
     try {
         let data = await userService.getUserPostsSV(req.user.userId, req.params.userId, req.params.limit)
         if(data) {

@@ -75,29 +75,9 @@ const uploadPost = async (req, res) => {
     }
 }
 
-// const getPosts = async (req, res) => {
-//     try {
-//         let data = await postService.getPostsSV(req.body.limit)
-//         if(data && data.length > 0) {
-//             return res.status(200).json({
-//                 EC: 0,
-//                 EM: 'Get posts success',
-//                 DT: data,
-//             })
-//         }
-//     } catch (error) {
-//         console.log('getPosts controller err: ', error);
-//         return res.status(500).json({
-//             EM: 'error from server',
-//             EC: '-5',
-//             DT: '',
-//         });
-//     }
-// }
-
 const getHomePosts = async (req, res) => {
     try {
-        let data = await postService.getHomePostsSV(req.user.email, req.params.limit)
+        let data = await postService.getHomePostsSV(req.user.userId, req.params.limit)
         if(data && data.length > 0) {
             return res.status(200).json({
                 EC: 0,
@@ -117,7 +97,7 @@ const getHomePosts = async (req, res) => {
 
 const getExplorePosts = async (req, res) => {
     try {
-        let data = await postService.getExplorePostsSV(req.user.email, req.body.limit)
+        let data = await postService.getExplorePostsSV(req.user.userId, req.body.limit)
         if(data && data.length > 0) {
             return res.status(200).json({
                 EC: 0,
@@ -135,30 +115,17 @@ const getExplorePosts = async (req, res) => {
     }
 }
 
-const getUserPosts = async (req, res) => {
-    try {
-        let data = await postService.getUserPostsSV(req.body.email, req.body.limit)
-        if(data) {
-            return res.status(200).json({
-                EC: 0,
-                EM: 'Get posts success',
-                DT: data,
-            })
-        }
-    } catch (error) {
-        console.log('getPosts controller err: ', error);
-        return res.status(500).json({
-            EM: 'error from server',
-            EC: '-5',
-            DT: '',
-        });
-    }
-}
-
 const likePost = async (req, res) => {
     try {
-        let data = await postService.likePostSV(req.user.email, req.body.postId)
-        if(data) {
+        let data = await postService.likePostSV(req.user.userId, req.body.postId)
+        if(+data === -1) {
+            return res.status(200).json({
+                EC: -1,
+                EM: `post is already liked`,
+                DT: '',
+            })
+        }
+        if(data && +data !== -1) {
             return res.status(200).json({
                 EC: 0,
                 EM: `Like post ${data} success`,
@@ -177,14 +144,23 @@ const likePost = async (req, res) => {
 
 const unlikePost = async (req, res) => {
     try {
-        let data = await postService.unlikePostSV(req.user.email, req.body.postId)
-        if(data) {
+        let data = await postService.unlikePostSV(req.user.userId, req.body.postId)
+        if(+data === -1) {
+            return res.status(200).json({
+                EC: -1,
+                EM: `post is not like yet`,
+                DT: '',
+            })
+        }
+
+        if(data && data !== -1) {
             return res.status(200).json({
                 EC: 0,
                 EM: `Unlike post ${data} success`,
                 DT: data,
             })
         }
+        
     } catch (error) {
         console.log('unlikePost controller err: ', error);
         return res.status(500).json({
@@ -195,6 +171,28 @@ const unlikePost = async (req, res) => {
     }
 }
 
+const getInfoOnePost = async (req, res) => {
+    try {
+        let data = await postService.getInfoOnePostSV(req.user.userId, req.params.postId)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: 'getInfoOnePost success',
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getInfoOnePost controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+
+/////////////
 const countOnePostLike = async (req, res) => {
     try {
         let data = await postService.countOnePostLikeSV(req.body.postId)
@@ -255,12 +253,13 @@ module.exports = {
     uploadImageCloudinary,
     uploadVideoCloudinary,
     uploadPost,
-    // getPosts,
     getHomePosts,
-    getUserPosts,
     getExplorePosts,
     likePost,
     unlikePost,
+    getInfoOnePost,
+
+    //
     countOnePostLike,
     countOnePostComments,
     getOnePost
