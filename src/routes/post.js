@@ -24,15 +24,16 @@ const postRoutes = (app) => {
     router.get('/get-post-info/:postId', postController.getInfoOnePost)
     router.get('/get-post-comments/:postId/:limit', postController.getPostComments)
 
+    router.post('/create-comment', postController.createComment)
+    router.post('/like-comment', postController.likeComment)
+    router.post('/unlike-comment', postController.unlikeComment)
+    router.get('/get-comment-info/:commentId', postController.getInfoOneComment)
+
     
     //////
     router.get('/count-like', postController.countOnePostLike)
     router.get('/count-comment', postController.countOnePostComments)
-
-    router.post('/create-comment', commentPostController.createComment)
     router.get('/get-comments', commentPostController.getOnePostComments)
-    router.post('/like-comment', commentPostController.likeComment)
-    router.post('/unlike-comment', commentPostController.unlikeComment)
     router.get('/count-comment-likes', commentPostController.countCommentLikes)
 
     return app.use('/post', router)

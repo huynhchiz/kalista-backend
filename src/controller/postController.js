@@ -209,6 +209,111 @@ const getPostComments = async (req, res) => {
     }
 }
 
+const createComment = async (req, res) => {
+    try {
+        if(!req.user.userId || !req.body.postId || !req.body.comment || !req.body.date || !req.body.time) {
+            return res.status(200).json({
+                EC: 1,
+                EM: 'Missing request info',
+                DT: '',
+            })
+        }
+        let data = await postService.createCommentSV(req.user.userId, req.body.postId, req.body.comment, req.body.date, req.body.time)
+        if (data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `createComment success`,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('createComment controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const likeComment = async (req, res) => {
+    try {
+        let data = await postService.likeCommentSV(req.user.userId, req.body.commentId)
+        if (+data === -1) {
+            return res.status(200).json({
+                EC: -1,
+                EM: `comment is already liked`,
+                DT: '',
+            })
+        }
+
+        if(data && +data !== -1) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `like comment ${data} success`,
+                DT: data,
+            })
+        }
+
+    } catch (error) {
+        console.log('likeComment controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const unlikeComment = async (req, res) => {
+    try {
+        let data = await postService.unlikeCommentSV(req.user.userId, req.body.commentId)
+        if (+data === -1) {
+            return res.status(200).json({
+                EC: -1,
+                EM: `comment is not liked yet`,
+                DT: '',
+            })
+        }
+
+        if(data && +data !== -1) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `unlike comment ${data} success`,
+                DT: data,
+            })
+        }
+
+    } catch (error) {
+        console.log('likeComment controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getInfoOneComment = async (req, res) => {
+    try {
+        let data = await postService.getInfoOneCommentSV(req.user.userId, req.params.commentId)
+        if (data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `getInfoOneComment success`,
+                DT: data,
+            })
+        }
+    } catch (error) {
+        console.log('getInfoOneComment controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 /////////////
 const countOnePostLike = async (req, res) => {
     try {
@@ -276,6 +381,11 @@ module.exports = {
     unlikePost,
     getInfoOnePost,
     getPostComments,
+    createComment,
+    likeComment,
+    unlikeComment,
+    getInfoOneComment,
+
 
 
     //

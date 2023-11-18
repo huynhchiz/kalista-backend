@@ -214,6 +214,77 @@ const getPostCommentsSV = async (accountId, postId, limit) =>  {
     return comments
 }
 
+const createCommentSV = async (accountId, postId, comment, date, time) => {
+    await db.PostsComments.create({
+        comment: comment,
+        userId: +accountId,
+        postId: +postId,
+        date: date,
+        time: time,
+    })
+    return comment
+}
+
+const likeCommentSV = async (accountId, commentId) => {
+    let checkLiked = await db.CommentsLikes.count({
+        where: { postsCommentId: +commentId, userId: +accountId }
+    })
+
+    if(checkLiked && checkLiked >= 1) {
+        return -1 // comment is already liked
+    }
+
+    await db.CommentsLikes.create({
+        postsCommentId: +commentId,
+        userId: +accountId
+    })
+    return commentId
+}
+
+const unlikeCommentSV = async (accountId, commentId) => {
+    let checkLiked = await db.CommentsLikes.count({
+        where: { postsCommentId: +commentId, userId: +accountId }
+    })
+
+    if(checkLiked && checkLiked >= 1) {
+        await db.CommentsLikes.destroy({
+            where: {
+                postsCommentId: +commentId,
+                userId: +accountId
+            }
+        })
+        return commentId
+    }
+
+    return -1 // comment is not liked yet
+    
+}
+
+const getInfoOneCommentSV = async (accountId, commentId) => {
+    let comment = await db.PostsComments.findOne({
+        where: { id: +commentId },
+        include: { model: db.Users, attributes: [ 'username', 'avatar', 'email', 'id' ] },
+        raw: true,
+        nest: true,
+    })
+    let likedComment = await db.CommentsLikes.count({
+        where: { postsCommentId: +commentId, userId: +accountId },
+    })
+    
+    let countLike = await db.CommentsLikes.count({
+        where: { postsCommentId: +commentId }
+    })
+
+    if (likedComment && +likedComment >= 1) {
+        return (
+            {...comment, countLike, liked: true}
+        )
+    } 
+    return (
+        {...comment, countLike, liked: false}
+    )
+}
+
 /////////////
 
 const countOnePostLikeSV = async (postId) => {
@@ -237,7 +308,6 @@ const countOnePostCommentsSV = async (postId) => {
     }
     return 0
 }
-
 
 const getOnePostSV = async (email, postId) => {
     let user = await db.Users.findOne({where: {email: email}})
@@ -277,6 +347,11 @@ module.exports = {
     unlikePostSV,
     getInfoOnePostSV,
     getPostCommentsSV,
+    createCommentSV,
+    likeCommentSV,
+    unlikeCommentSV,
+    getInfoOneCommentSV,
+
 
     ////
     countOnePostLikeSV,
