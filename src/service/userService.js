@@ -62,6 +62,48 @@ const getUserPostsSV = async (accountId, userId, limit) => {
      }
 }
 
+const getFollowersSV = async (userId, limit) => {
+   let followersListId = await db.Follows.findAll({
+      where: { userToFollow: +userId },
+      attributes: [ 'follower' ],
+      raw: true,
+   })
+   followersListId = followersListId.map(item => (item.follower))
+
+   let data = {}
+   const { count, rows } = await db.Users.findAndCountAll({
+      where: { id: followersListId },
+      raw: true,
+      limit: +limit
+   })
+   data = {
+      countFollower: count || 0,
+      listFollower: rows
+   }
+   return data
+}
+
+const getFollowingsSV = async (userId, limit) => {
+   let followingListId = await db.Follows.findAll({
+       where: { follower: +userId },
+       attributes: [ 'userToFollow' ],
+       raw: true,
+   })
+   followingListId = followingListId.map(item => (item.userToFollow))
+
+   let data = {}
+   const { count, rows } = await db.Users.findAndCountAll({
+      where: { id: followingListId },
+      raw: true,
+      limit: +limit
+   })
+   data = {
+       countFollowing: count || 0,
+       listFollowing: rows
+   }
+   return data
+}
+
 // const uploadUserAvatar = async (email, avatar) => {
 //     try {
 //         await db.Users.update({
@@ -174,6 +216,10 @@ const getUserPostsSV = async (accountId, userId, limit) => {
 module.exports = {
     getInfoSV,
     getUserPostsSV,
+    getFollowingsSV,
+    getFollowersSV,
+
+
     // uploadUserAvatar,
     // getUserAvatar,
     // deleteUserAvatar,

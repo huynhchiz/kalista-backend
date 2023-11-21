@@ -10,8 +10,9 @@ const userRoutes = (app) => {
 
     router.get('/get-user-info/:userId', userController.getInfo)
     router.get('/get-user-posts/:userId/:limit', userController.getUserPosts)
-    // router.get('/get-followers/:userId', followController.getFollowers)
-    // router.get('/get-followings/:userId', followController.getUsersFollowing)
+    router.get('/get-user-followers/:userId/:limit', userController.getFollowers)
+    router.get('/get-user-followings/:userId/:limit', userController.getFollowings)
+    
 
     return app.use('/user', router)
 }

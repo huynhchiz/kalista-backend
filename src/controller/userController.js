@@ -40,6 +40,48 @@ const getUserPosts = async (req, res) => {
     }
 }
 
+const getFollowers = async (req, res) => {
+    try {
+        let data = await userService.getFollowersSV(req.params.userId, req.params.limit)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `get followers success`,
+                DT: data,
+            })
+        }
+        
+    } catch (error) {
+        console.log('getFollowers controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
+const getFollowings = async (req, res) =>  {
+    try {
+        let data = await userService.getFollowingsSV(req.params.userId, req.params.limit)
+        if(data) {
+            return res.status(200).json({
+                EC: 0,
+                EM: `get user followings success`,
+                DT: data,
+            })
+        }
+        
+    } catch (error) {
+        console.log('getFollowings controller err: ', error);
+        return res.status(500).json({
+            EM: 'error from server',
+            EC: '-5',
+            DT: '',
+        });
+    }
+}
+
 // const getAccount = async (req, res) =>{
 //     try {
 //         let data = await userService.getAccountInfo(req.user.email)
@@ -205,7 +247,10 @@ const getUserPosts = async (req, res) => {
 
 module.exports = {
     getInfo,
-    getUserPosts
+    getUserPosts,
+    getFollowers,
+    getFollowings,
+
     // getAccount,
     // refreshNewToken,
     // uploadAvatar,
