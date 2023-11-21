@@ -16,7 +16,7 @@ const postRoutes = (app) => {
     router.post('/upload-post', postController.uploadPost)
 
     router.get('/get-home-posts/:limit', postController.getHomePosts)
-    router.get('/get-explore-posts', postController.getExplorePosts)
+    router.get('/get-explore-posts/:limit', postController.getExplorePosts)
 
     router.post('/like-post', postController.likePost)
     router.post('/unlike-post', postController.unlikePost)

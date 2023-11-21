@@ -97,7 +97,7 @@ const getHomePosts = async (req, res) => {
 
 const getExplorePosts = async (req, res) => {
     try {
-        let data = await postService.getExplorePostsSV(req.user.userId, req.body.limit)
+        let data = await postService.getExplorePostsSV(req.user.userId, req.params.limit)
         if(data && data.length > 0) {
             return res.status(200).json({
                 EC: 0,

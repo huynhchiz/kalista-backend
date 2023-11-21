@@ -66,15 +66,14 @@ const unlikePostSV = async (userId, postId) => {
     return -1 // post is not liked yet
 }
 
-const getHomePostsSV = async (userId, limit) => {
-    // let user = await db.Users.findOne({where: {id: +userId}})
+const getHomePostsSV = async (accountId, limit) => {
     let followingListId = await db.Follows.findAll({
-        where: { follower: +userId },
+        where: { follower: +accountId },
         attributes: [ 'userToFollow' ],
         raw: true,
     })
     followingListId = followingListId.map(item => (item.userToFollow))
-    followingListId = followingListId.concat(userId)
+    followingListId = followingListId.concat(accountId)
 
     let posts = []
     posts = await db.Posts.findAll({
@@ -88,7 +87,7 @@ const getHomePostsSV = async (userId, limit) => {
 
     posts = await Promise.all(posts.map(async (post) => {
         let likePost = await db.PostsLikes.findOne({
-            where: { postId: +post.id, userId: +userId },
+            where: { postId: +post.id, userId: +accountId },
             attributes: [ 'userId' ],
             raw: true
         })
@@ -98,7 +97,7 @@ const getHomePostsSV = async (userId, limit) => {
         let countComment = await db.PostsComments.count({
             where: { postId: +post.id }
         })
-        if (likePost && +likePost.userId === +userId) {
+        if (likePost && +likePost.userId === +accountId) {
             return (
                 {...post, countLike, countComment, liked: true}
             )
@@ -110,30 +109,28 @@ const getHomePostsSV = async (userId, limit) => {
     return posts
 }
 
-const getExplorePostsSV = async (email, limit) => {
-    let user = await db.Users.findOne({where: {email: email}})
+const getExplorePostsSV = async (accountId, limit) => {
     let followingListId = await db.Follows.findAll({
-        where: { follower: +user.id },
+        where: { follower: +accountId },
         attributes: [ 'userToFollow' ],
         raw: true,
     })
     followingListId = followingListId.map(item => (item.userToFollow))
-    followingListId = followingListId.concat(user.id)
+    followingListId = followingListId.concat(accountId)
     
     let posts = [] 
     posts = await db.Posts.findAll({
         where: { userId: {[Op.notIn]: followingListId} },
-        include: 
-            { model: db.Users, attributes: [ 'username', 'avatar', 'email' ] },
+        include: { model: db.Users, attributes: ['username', 'avatar', 'email', 'id'] },
         raw: true, 
         nest: true,
-        limit: limit,
+        limit: +limit,
         order: [['updatedAt', 'DESC']]
     })
 
     posts = await Promise.all(posts.map(async (post) => {
         let likePost = await db.PostsLikes.findOne({
-            where: { postId: +post.id, userId: +user.id },
+            where: { postId: +post.id, userId: +accountId },
             attributes: [ 'userId' ],
             raw: true
         })
@@ -143,7 +140,7 @@ const getExplorePostsSV = async (email, limit) => {
         let countComment = await db.PostsComments.count({
             where: { postId: +post.id }
         })
-        if (likePost && +likePost.userId === +user.id) {
+        if (likePost && +likePost.userId === +accountId) {
             return (
                 {...post, countLike, countComment, liked: true}
             )
