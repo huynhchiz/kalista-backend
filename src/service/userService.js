@@ -122,8 +122,11 @@ const searchUsersSV = async (searchValue, limit) => {
       let countFollowing = await db.Follows.count({
          where: { follower: +user.id }
       })
+      let countPost = await db.Posts.count({
+         where: { userId: +user.id }
+      })
 
-      return { ...user, countFollower, countFollowing }
+      return { ...user, countFollower, countFollowing, countPost }
    }))
 
    return users
