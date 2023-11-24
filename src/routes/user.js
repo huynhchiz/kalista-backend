@@ -12,6 +12,7 @@ const userRoutes = (app) => {
     router.get('/get-user-posts/:userId/:limit', userController.getUserPosts)
     router.get('/get-user-followers/:userId/:limit', userController.getFollowers)
     router.get('/get-user-followings/:userId/:limit', userController.getFollowings)
+    router.get('/get-search-users/:searchValue/:limit', userController.searchUsers)
     
 
     return app.use('/user', router)
