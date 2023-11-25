@@ -1,4 +1,4 @@
-import { Op } from 'sequelize'
+import { Op, Sequelize } from 'sequelize'
 import db from '../models/index'
 
 const getInfoSV = async (accountId, userId) => {
@@ -7,11 +7,11 @@ const getInfoSV = async (accountId, userId) => {
         attributes: ['email', 'avatar', 'address', 'id', 'phone', 'username'],
         raw: true,
     })
-    let isFollowing = await db.Follows.count({
-        where: { userToFollow: +userId, follower: accountId },
+    let isFollowing = await db.Followings.count({
+        where: { userId: +accountId, following: +userId },
     })
-    let countFollower = await db.Follows.count({ where: { userToFollow: +userId } })
-    let countFollowing = await db.Follows.count({ where: { follower: +userId } })
+    let countFollower = await db.Followers.count({ where: { userId: +userId } })
+    let countFollowing = await db.Followings.count({ where: { userId: +userId } })
     let countPost = await db.Posts.count({ where: { userId: +userId } })    
 
     return {
@@ -64,8 +64,8 @@ const getUserPostsSV = async (accountId, userId, limit) => {
 }
 
 const getFollowersSV = async (userId, limit) => {
-   let followersListId = await db.Follows.findAll({
-      where: { userToFollow: +userId },
+   let followersListId = await db.Followers.findAll({
+      where: { userId: +userId },
       attributes: [ 'follower' ],
       raw: true,
    })
@@ -85,12 +85,12 @@ const getFollowersSV = async (userId, limit) => {
 }
 
 const getFollowingsSV = async (userId, limit) => {
-   let followingListId = await db.Follows.findAll({
-       where: { follower: +userId },
-       attributes: [ 'userToFollow' ],
+   let followingListId = await db.Followings.findAll({
+       where: { userId: +userId },
+       attributes: [ 'following' ],
        raw: true,
    })
-   followingListId = followingListId.map(item => (item.userToFollow))
+   followingListId = followingListId.map(item => (item.following))
 
    let data = {}
    const { count, rows } = await db.Users.findAndCountAll({
@@ -107,28 +107,34 @@ const getFollowingsSV = async (userId, limit) => {
 
 const searchUsersSV = async (searchValue, limit) => {
    let users = await db.Users.findAll({
-      where: {
-         username: {[Op.like]: '%' + searchValue + '%' },
-      },
-      attributes: ['id', 'email', 'username', 'avatar'],
+      where: { username: {[Op.like]: '%' + searchValue + '%' }},
+      subQuery: false,
+      attributes: { include: [
+            [Sequelize.fn('COUNT', Sequelize.col('followers.id')), 'countFollower'],
+      ]},
+      include: [
+         { model: db.Followers, attributes: []},
+      ],
+      group: ['Users.id'],
       limit: +limit,
       raw: true,
+      order: [['countFollower', 'DESC']]
    })
-
+   
    users = await Promise.all(users.map(async (user) => {
-      let countFollower = await db.Follows.count({
-         where: { userToFollow: +user.id }
-      })
-      let countFollowing = await db.Follows.count({
-         where: { follower: +user.id }
-      })
-      let countPost = await db.Posts.count({
-         where: { userId: +user.id }
-      })
+      let countFollowing = await db.Followings.count({ where: { userId: +user.id } })
+      let countPost = await db.Posts.count({ where: { userId: +user.id } })
 
-      return { ...user, countFollower, countFollowing, countPost }
+      return {
+         id: user.id,
+         avatar: user.avatar,
+         email: user.email,
+         countFollower: user.countFollower,
+         countFollowing: countFollowing,
+         countPost: countPost,
+      }
    }))
-
+   
    return users
 }
 

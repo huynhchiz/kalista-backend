@@ -156,8 +156,8 @@ const getInfoSV = async (userId) => {
       raw: true,
   })
 
-  let countFollower = await db.Follows.count({ where: { userToFollow: +user.id } })
-  let countFollowing = await db.Follows.count({ where: { follower: +user.id } })
+  let countFollower = await db.Followers.count({ where: { userId: +user.id } })
+  let countFollowing = await db.Followings.count({ where: { userId: +user.id } })
   let countPost = await db.Posts.count({ where: { userId: +user.id } })
 
   return {
@@ -196,40 +196,50 @@ const deleteAvatarSV = async (userId) => {
   return userId
 }
 
-const followSV = async (userId, userFollowId) =>  {
-
+const followSV = async (accountId, userFollowId) =>  {
    // tim ra nhung user minh dang follow
-   let usersAlreadyFollowing = await db.Follows.findAll({
-      where: { follower: +userId },
+   let usersAlreadyFollowing = await db.Followings.findAll({
+      where: { userId: +accountId },
       raw: true,
-      attributes: [ 'userToFollow' ]
+      attributes: [ 'following' ]
    })
-   let followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
+   let followingIds = usersAlreadyFollowing.map(item => (item.following)) // chi lay id
    if (followingIds.includes(userFollowId)) {
       return -1 // user is already following
    }
 
-   await db.Follows.create({
-      follower: +userId,
-      userToFollow: +userFollowId
-   })
+   await db.Followings.create({
+      userId: +accountId,
+      following: +userFollowId
+   });
+
+   await db.Followers.create({
+      userId: +userFollowId,
+      follower: +accountId
+   });
 
    return userFollowId
 }
 
-const unfollowSV = async (userId, userUnfollowId) => {
+const unfollowSV = async (accountId, userUnfollowId) => {
    // tim ra nhung user minh dang follow
-   let usersAlreadyFollowing = await db.Follows.findAll({
-      where: { follower: +userId },
+   let usersAlreadyFollowing = await db.Followings.findAll({
+      where: { userId: +accountId },
       raw: true,
-      attributes: [ 'userToFollow' ]
+      attributes: [ 'following' ]
    })
-   let followingIds = usersAlreadyFollowing.map(item => (item.userToFollow)) // chi lay id
+   let followingIds = usersAlreadyFollowing.map(item => (item.following)) // chi lay id
    if (followingIds.includes(userUnfollowId)) {
-      await db.Follows.destroy({
+      await db.Followings.destroy({
          where: {
-            follower: +userId,
-            userToFollow: +userUnfollowId
+            userId: +accountId,
+            following: +userUnfollowId
+         }
+      })
+      await db.Followers.destroy({
+         where: {
+            userId: +userUnfollowId,
+            follower: +accountId
          }
       })
       return userUnfollowId
@@ -237,10 +247,9 @@ const unfollowSV = async (userId, userUnfollowId) => {
    return -1 // user is not follow yet
 }
 
-const getFollowersSV = async (userId, limit) => {
-   let user = await db.Users.findOne({ where: { id: +userId } })
-   let followersListId = await db.Follows.findAll({
-      where: { userToFollow: +user.id },
+const getFollowersSV = async (accountId, limit) => {
+   let followersListId = await db.Followers.findAll({
+      where: { userId: +accountId },
       attributes: [ 'follower' ],
       raw: true,
    })
@@ -259,14 +268,13 @@ const getFollowersSV = async (userId, limit) => {
    return data
 }
 
-const getFollowingsSV = async (userId, limit) => {
-   let user = await db.Users.findOne({ where: { id: +userId } })
-   let followingListId = await db.Follows.findAll({
-       where: { follower: +user.id },
-       attributes: [ 'userToFollow' ],
+const getFollowingsSV = async (accountId, limit) => {
+   let followingListId = await db.Followings.findAll({
+       where: { userId: +accountId },
+       attributes: [ 'following' ],
        raw: true,
    })
-   followingListId = followingListId.map(item => (item.userToFollow))
+   followingListId = followingListId.map(item => (item.following))
 
    let data = {}
    const { count, rows } = await db.Users.findAndCountAll({
