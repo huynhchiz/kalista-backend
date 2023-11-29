@@ -7,11 +7,14 @@ module.exports = (sequelize, DataTypes) => {
          Users.belongsTo(models.Groups, { foreignKey: 'groupId' });
          Users.belongsTo(models.Genders, { foreignKey: 'genderId' });
 
+         Users.belongsToMany(models.Chatboxs, { through: 'Users_Chatboxs', foreignKey: 'userId' });
+
          Users.hasMany(models.Followers);
          Users.hasMany(models.Followings);
          Users.hasMany(models.Posts);
          Users.hasMany(models.PostsComments);
          Users.hasMany(models.PostsLikes);
+         Users.hasMany(models.Messages);
       }
    }
    Users.init(
