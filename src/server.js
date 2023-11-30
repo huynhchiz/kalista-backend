@@ -8,6 +8,7 @@ import configCors from "./config/configCors";
 import accountRoutes from './routes/account.js';
 import userRoutes from './routes/user.js';
 import postRoutes from './routes/post.js';
+import messageRoutes from './routes/message.js';
 
 dotenv.config()
 
@@ -39,6 +40,7 @@ app.use(cookieParser());
 accountRoutes(app)
 userRoutes(app)
 postRoutes(app)
+messageRoutes(app)
 
 app.use((req, res) => {
     res.send('404 not found!')

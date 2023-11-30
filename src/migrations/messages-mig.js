@@ -9,8 +9,13 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         
+         type: {
+            type: Sequelize.STRING,
+         },
          message: {
+            type: Sequelize.STRING,
+         },
+         src: {
             type: Sequelize.STRING,
          },
          userId: {

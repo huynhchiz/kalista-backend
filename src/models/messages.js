@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
    }
    Messages.init(
       {
+        type: DataTypes.STRING,
         message: DataTypes.STRING,
+        src: DataTypes.STRING,
         userId: DataTypes.INTEGER,
         chatboxId: DataTypes.INTEGER,
         date: DataTypes.STRING,

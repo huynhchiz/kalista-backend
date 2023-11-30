@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       {
          userId: DataTypes.INTEGER,
          userId2: DataTypes.INTEGER,
-         chatboxsId: DataTypes.INTEGER,
+         chatboxId: DataTypes.INTEGER,
       },
       {
          sequelize,
