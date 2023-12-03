@@ -29,13 +29,6 @@ const postRoutes = (app) => {
     router.post('/unlike-comment', postController.unlikeComment)
     router.get('/get-comment-info/:commentId', postController.getInfoOneComment)
 
-    
-    //////
-    router.get('/count-like', postController.countOnePostLike)
-    router.get('/count-comment', postController.countOnePostComments)
-    router.get('/get-comments', commentPostController.getOnePostComments)
-    router.get('/count-comment-likes', commentPostController.countCommentLikes)
-
     return app.use('/post', router)
 }
 

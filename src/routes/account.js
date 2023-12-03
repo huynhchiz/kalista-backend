@@ -19,8 +19,7 @@ const accountRoutes = (app) => {
     router.post('/upload-avatar', accountController.uploadAvatar)
     router.get('/get-avatar', accountController.getAvatar)
     router.post('/delete-avatar', accountController.deleteAvatar)
-
-    ////////
+    
     router.post('/follow', accountController.follow)
     router.post('/unfollow', accountController.unfollow)
 

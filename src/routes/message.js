@@ -9,7 +9,9 @@ const router  = express.Router()
 const messageRoutes = (app) => {
     router.all('*', checkUserJwt, checkUserPermission);
 
+    router.get('/get-list-chatbox/:limit', messageController.getListChatbox)
     router.get('/get-chatbox/:userId/:limit', messageController.getChatbox)
+
     
 
     return app.use('/message', router)
