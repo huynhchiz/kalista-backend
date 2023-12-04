@@ -12,6 +12,15 @@ module.exports = {
          name: {
             type: Sequelize.STRING,
          },
+         userId: {
+            type: Sequelize.INTEGER,
+         },
+         userId2: {
+            type: Sequelize.INTEGER,
+         },
+         lastMessageId: {
+            type: Sequelize.INTEGER,
+         },
 
          createdAt: {
             allowNull: false,

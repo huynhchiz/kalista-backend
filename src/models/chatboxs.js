@@ -3,13 +3,16 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
    class Chatboxs extends Model {
       static associate(models) {
-         Chatboxs.belongsToMany(models.Users, { through: 'Users_Chatboxs', foreignKey: 'chatboxId' });
+         Chatboxs.belongsTo(models.Users, { foreignKey: 'userId' });
          Chatboxs.hasMany(models.Messages);
       }
    }
    Chatboxs.init(
       {
          name: DataTypes.STRING,
+         userId: DataTypes.INTEGER,
+         userId2: DataTypes.INTEGER,
+         lastMessageId: DataTypes.INTEGER
       },
       {
          sequelize,

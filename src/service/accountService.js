@@ -218,6 +218,24 @@ const followSV = async (accountId, userFollowId) =>  {
       follower: +accountId
    });
 
+   // check and create newChatbox
+   const checkChatbox = await db.Chatboxs.findOne({
+      where: {
+         [Op.or]: [
+            { userId: +accountId, userId2: +userFollowId },
+            { userId: +userFollowId, userId2: +accountId }
+         ]
+      } 
+   })
+
+   if(!checkChatbox) {
+      await db.Chatboxs.create({
+         name: `chatbox_${accountId}and${userFollowId}`,
+         userId: +accountId,
+         userId2: +userFollowId,
+      })
+   }
+
    return userFollowId
 }
 

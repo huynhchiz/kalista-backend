@@ -10,7 +10,9 @@ const messageRoutes = (app) => {
     router.all('*', checkUserJwt, checkUserPermission);
 
     router.get('/get-list-chatbox/:limit', messageController.getListChatbox)
-    router.get('/get-chatbox/:userId/:limit', messageController.getChatbox)
+    router.get('/get-chatbox/:userId/:chatboxId/:limit', messageController.getChatbox)
+
+    router.post('/create-message', messageController.createMessage)
 
     
 

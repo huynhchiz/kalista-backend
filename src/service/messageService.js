@@ -2,54 +2,68 @@ import { Op } from 'sequelize'
 import db from '../models/index.js'
 
 const getListChatboxSV = async (accountId, limit) => {
-   const followingListId = await db.Followings.findAll({
-       where: { userId: +accountId },
-       attributes: [ 'following' ],
-       raw: true,
-   })
-   followingListId = followingListId.map(item => (item.following))
-   
-   const listChatbox = await db.Users_Chatboxs.findAll({
+   let listChatbox = await db.Chatboxs.findAll({
       where: { 
          [Op.or]: [
             { userId: +accountId },
             { userId2: +accountId }
          ]
       },
+      attributes: ['id', 'userId', 'userId2', 'lastMessageId', 'createdAt', 'updatedAt'],
       subQuery: false,
-      include: { model: db.Users, attributes: [ 'id', 'avatar', 'username' ] },
-
-      /////////// dang lam
-
+      raw: true,
+      nest: true,
+      order: [['updatedAt', 'DESC']],  
+      limit: +limit,
    })
+   
+   listChatbox = await Promise.all(listChatbox.map(async chatbox => {
+      const user1 = await db.Users.findOne({
+         where: { id: +chatbox.userId },
+         raw: true,
+         nest: true,
+         attributes: ['id', 'avatar', 'username']
+      })
+      const user2 = await db.Users.findOne({
+         where: { id: +chatbox.userId2 },
+         raw: true,
+         nest: true,
+         attributes: ['id', 'avatar', 'username']
+      })
+      const lastMessage = await db.Messages.findOne({
+         where: { id: +chatbox.lastMessageId },
+         attributes: ['message']
+      })
 
-   console.log(listChatbox);
+      return { 
+         ...chatbox,
+         account: +user1.id === +accountId ? user1 : user2,
+         otherUser: +user1.id === +accountId ? user2 : user1,
+         lastMessage: lastMessage?.message ? lastMessage.message : ''
+      }
+   }))
 
-
+   return listChatbox
    
 
 }
 
-const getChatboxSV = async (accountId, userId, limit) => {
-   const checkChatbox = await db.Users_Chatboxs.findOne({
-      where: {
-         [Op.or]: [
-            { userId: +accountId, userId2: +userId },
-            { userId: +userId, userId2: +accountId }
-         ]
-      } 
+const getChatboxSV = async (accountId, userId, chatboxId, limit) => {
+   const chatbox = await db.Chatboxs.findOne({
+      // where: {
+      //    [Op.or]: [
+      //       { userId: +accountId, userId2: +userId },
+      //       { userId: +userId, userId2: +accountId }
+      //    ]
+      // } 
+      where: { id: +chatboxId }
    })
    
-   if(checkChatbox) {
-      const chatbox = await db.Chatboxs.findOne({
-         where: { id: +checkChatbox.chatboxId },
-         attributes: [ 'id', 'name' ]
-      })
-
+   if(chatbox) {
       const chatboxMessage = await db.Messages.findAll({
-         where: { chatboxId: +chatbox.id },
+         where: { chatboxId: +chatboxId },
          order: [['updatedAt', 'DESC']],
-         attributes: [ 'id', 'userId', 'type', 'message', 'src', 'date', 'time' ],
+         attributes: [ 'id', 'userId', 'type', 'message', 'src' ],
          limit: +limit,
       })
 
@@ -57,13 +71,9 @@ const getChatboxSV = async (accountId, userId, limit) => {
 
    } else {
       const newChatbox = await db.Chatboxs.create({
-         name: `chatbox_${accountId}and${userId}`
-      })
-
-      await db.Users_Chatboxs.create({
+         name: `chatbox_${accountId}and${userId}`,
          userId: +accountId,
          userId2: +userId,
-         chatboxId: +newChatbox.id
       })
 
       return {
@@ -76,8 +86,30 @@ const getChatboxSV = async (accountId, userId, limit) => {
 
 }
 
+const createMessageSV = async (accountId, type, chatboxId, message, src, date, time) => {
+   const newMessage = await db.Messages.create({
+      type: type,
+      message: message ? message : '',
+      src: src ? src : '',
+      userId: +accountId,
+      chatboxId: +chatboxId,
+      date: date,
+      time: time,
+   })
+
+   const chatboxUpdate = await db.Chatboxs.update({
+      lastMessageId: +newMessage.id
+   },
+   { where: { id: +chatboxId }}
+   )
+
+   return chatboxUpdate
+}
+
 module.exports = {
    getListChatboxSV,
    getChatboxSV,
+   createMessageSV,
+
 
 }

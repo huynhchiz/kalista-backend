@@ -1,7 +1,6 @@
 import express from "express";
 
 import postController from '../controller/postController'
-import commentPostController from "../controller/commentPostController";
 
 import { checkUserJwt, checkUserPermission } from '../middleware/jwtActions';
 import { upload } from "../middleware/multer";
