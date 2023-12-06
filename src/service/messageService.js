@@ -50,12 +50,6 @@ const getListChatboxSV = async (accountId, limit) => {
 
 const getChatboxSV = async (accountId, userId, chatboxId, limit) => {
    const chatbox = await db.Chatboxs.findOne({
-      // where: {
-      //    [Op.or]: [
-      //       { userId: +accountId, userId2: +userId },
-      //       { userId: +userId, userId2: +accountId }
-      //    ]
-      // } 
       where: { id: +chatboxId }
    })
    
@@ -67,7 +61,10 @@ const getChatboxSV = async (accountId, userId, chatboxId, limit) => {
          limit: +limit,
       })
 
-      return chatboxMessage
+      return {
+         chatboxName: chatbox.name,
+         chatboxMessage
+      }
 
    } else {
       const newChatbox = await db.Chatboxs.create({

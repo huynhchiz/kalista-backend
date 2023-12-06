@@ -1,6 +1,5 @@
 import http from 'http'
 import { app } from '../server'
-import db from '../models/index.js'
 
 export const server = http.createServer(app)
 const io = require("socket.io")(server, {
@@ -9,30 +8,23 @@ const io = require("socket.io")(server, {
   }
 })
 
-const getChatboxName = async () => {
-    let chatboxs = await db.Chatboxs.findAll({
-        attributes: ['name']
+const usersOnline = {}
+
+io.on('connection', (socket) => {
+
+    socket.on('online', (accountId) => {
+        console.log(`user ${accountId} connected`)
+        io.emit(`checkOnline${accountId}`, { user: accountId })
+        usersOnline[socket.id] = accountId
     })
-    return chatboxs
-}
 
-
-io.on('connection', (socket) => { // Handle khi có connect từ client tới
-    console.log('user connected ' + socket.id);
-  
-    socket.emit("getId", socket.id);  
-    
-    socket.on("sendDataClient", (data) => { // Handle khi có sự kiện tên là sendDataClient từ phía client
-        getChatboxName()
-        .then((data) => {
-            let chatboxName = data.map(name => name.name)
-            chatboxName.forEach(item => {
-                io.emit(`sendDataServer_${item}`, { data }); // phát sự kiện có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-            });
-        })
+    socket.on('sendMessage', (chatboxId) => { // when client send message (with data = chatboxId)
+        io.emit(`sendMessageFromChatbox${chatboxId}`, { chatboxId }) // emit den client 1 hanh dong cho chatboxId do
     })
   
     socket.on("disconnect", () => {
-      console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+        console.log(`user ${ usersOnline[socket.id]} disconnected`)
+        io.emit(`checkOffline${usersOnline[socket.id]}`, { user: usersOnline[socket.id] })
+        delete usersOnline[socket.id]
     });
 })
