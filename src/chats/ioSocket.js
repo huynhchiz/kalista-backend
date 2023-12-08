@@ -8,14 +8,14 @@ const io = require("socket.io")(server, {
   }
 })
 
-const usersOnline = {}
+// const usersOnline = {}
 
 io.on('connection', (socket) => {
 
     socket.on('online', (accountId) => {
         console.log(`user ${accountId} connected`)
-        io.emit(`checkOnline${accountId}`, { user: accountId })
-        usersOnline[socket.id] = accountId
+        // io.emit(`checkOnline${accountId}`, { user: accountId })
+        // usersOnline[socket.id] = accountId
     })
 
     socket.on('sendMessage', (chatboxId) => { // when client send message (with data = chatboxId)
@@ -23,8 +23,9 @@ io.on('connection', (socket) => {
     })
   
     socket.on("disconnect", () => {
-        console.log(`user ${ usersOnline[socket.id]} disconnected`)
-        io.emit(`checkOffline${usersOnline[socket.id]}`, { user: usersOnline[socket.id] })
-        delete usersOnline[socket.id]
+        console.log('user disconnected');
+        // console.log(`user ${ usersOnline[socket.id]} disconnected`)
+        // io.emit(`checkOffline${usersOnline[socket.id]}`, { user: usersOnline[socket.id] })
+        // delete usersOnline[socket.id]
     });
 })
