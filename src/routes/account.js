@@ -26,6 +26,8 @@ const accountRoutes = (app) => {
     router.get('/get-followers/:limit', accountController.getFollowers)
     router.get('/get-followings/:limit', accountController.getFollowings)
 
+    router.post('/update-info', accountController.updateInfo)
+
     return app.use('/account', router)
 }
 

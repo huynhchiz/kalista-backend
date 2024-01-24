@@ -347,6 +347,19 @@ const getPostsSV = async (userId, limit) => {
    }
 }
 
+
+const updateInfoSV = async (accountId, newUsername) => {
+   // username : done
+   
+   await db.Users.update({
+      username: newUsername
+   },
+   {
+      where: { id: +accountId }
+   })
+   return newUsername
+}
+
 module.exports = {
    registerSV,
    loginSV,
@@ -359,5 +372,6 @@ module.exports = {
    unfollowSV,
    getFollowersSV,
    getFollowingsSV,
-   getPostsSV
+   getPostsSV,
+   updateInfoSV
 }
